@@ -1,0 +1,31 @@
+- name: Install prerequisite packages
+  dnf:
+    name:
+      - dnf-plugins-core
+      - device-mapper-persistent-data
+      - lvm2
+    state: latest
+
+- name: Add Docker CE repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install Docker CE
+  dnf:
+    name: docker-ce
+    state: latest
+    update_cache: yes
+
+- name: Ensure Docker service is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user 'ansible' to docker group
+  user:
+    name: ansible
+    groups: docker
+    append: yes
+  become: yes

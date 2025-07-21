@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    # - include_tasks: tasks/install_docker.yml
+    - include_tasks: tasks/run_jenkins.yml
