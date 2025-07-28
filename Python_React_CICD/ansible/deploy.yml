@@ -1,0 +1,54 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Stop {{ app_name }} service before deployment
+      ansible.builtin.systemd:
+        name: "{{ app_name }}.service"
+        state: stopped
+      ignore_errors: yes
+
+    - name: Deploy application files from backend directory
+      ansible.builtin.copy:
+        src: ../backend/
+        dest: "{{ app_directory }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+
+    - name: Check if virtual environment already exists
+      ansible.builtin.stat:
+        path: "{{ app_directory }}/venv/bin/activate"
+      register: venv_exists
+
+    - name: Create virtual environment if it does not exist
+      ansible.builtin.command: "{{ python_version_to_use }} -m venv {{ app_directory }}/venv"
+      args:
+        creates: "{{ app_directory }}/venv/bin/activate"
+      become_user: "{{ app_user }}"
+      when: not venv_exists.stat.exists
+
+    - name: Install or update Python dependencies from requirements.txt
+      ansible.builtin.pip:
+        requirements: "{{ app_directory }}/requirements.txt"
+        virtualenv: "{{ app_directory }}/venv"
+        extra_args: "--upgrade pip"
+      become_user: "{{ app_user }}"
+
+    - name: Start/Restart {{ app_name }} service after deployment
+      ansible.builtin.systemd:
+        name: "{{ app_name }}.service"
+        state: restarted 
+        daemon_reload: yes
+
+    - name: Get systemctl status for {{ app_name }}
+      ansible.builtin.command: systemctl status {{ app_name }}
+      register: service_status_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Extract and print active status
+      ansible.builtin.debug:
+        msg: "{{ (service_status_output.stdout_lines | select('search', 'Active:') | list)[0] | default('Active status not found') }}"
+

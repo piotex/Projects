@@ -1,0 +1,21 @@
+- name: Update all packages on RedHat/CentOS/Fedora systems
+  ansible.builtin.dnf: 
+    name: "*"         
+    state: latest
+    update_cache: yes
+
+- name: Clean up DNF/YUM cache (RedHat/CentOS/Fedora)
+  ansible.builtin.command: dnf clean all 
+
+- name: Autoremove unneeded packages (RedHat/CentOS/Fedora)
+  ansible.builtin.command: dnf autoremove -y
+
+- name: Reboot if required by updates
+  ansible.builtin.reboot:
+    reboot_timeout: 600 
+  when: ansible_reboot_required | default(false) 
+
+- name: Verify kernel version after reboot (optional)
+  ansible.builtin.debug:
+    msg: "Kernel version after update: {{ ansible_kernel }}"
+  when: ansible_reboot_required | default(false) 

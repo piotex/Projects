@@ -1,0 +1,18 @@
+[Unit]
+Description=Backend App
+After=network.target
+
+[Service]
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ app_directory }}
+ExecStart={{ app_directory }}/venv/bin/{{ python_version_to_use }} {{ app_directory }}/{{ app_main_file }}
+
+Type=simple
+Restart=always
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

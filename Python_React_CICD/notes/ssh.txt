@@ -1,0 +1,18 @@
+
+# ======= On Remote Machine =============================================
+sudo useradd -m -s /bin/bash ansible_user
+sudo usermod -aG sudo ansible_user || true
+sudo usermod -aG wheel ansible_user || true
+echo "ansible_user:ansible_pwd" | sudo chpasswd
+echo "ansible_user ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+# =======================================================================
+
+# ====== On Main Machine ================================================
+cd /home/peter
+rm -rf ansible_user.id_ed25519
+ssh-keygen -t ed25519 -f ansible_user.id_ed25519 -N "" -C "ansible_user@main_machine"
+export SSHPASS="ansible_pwd" 
+sshpass -e ssh-copy-id -i ansible_user.id_ed25519.pub ansible_user@192.168.56.110
+unset SSHPASS 
+ssh ansible_user@192.168.56.110 -i ansible_user.id_ed25519
+# =======================================================================

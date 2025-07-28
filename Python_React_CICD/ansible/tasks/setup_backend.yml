@@ -1,0 +1,128 @@
+- name: Stop and disable Flask app service if it exists
+  ansible.builtin.systemd:
+    name: "{{ app_name }}.service"
+    state: stopped
+    enabled: no
+    daemon_reload: yes 
+  ignore_errors: yes 
+
+- name: Remove Flask app systemd service file
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ app_name }}.service"
+    state: absent 
+  ignore_errors: yes
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Remove application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: absent
+  ignore_errors: yes 
+
+- name: Remove application user
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    state: absent
+    remove: yes 
+    force: yes 
+  ignore_errors: yes 
+
+- name: Remove application group
+  ansible.builtin.group:
+    name: "{{ app_group }}"
+    state: absent
+  ignore_errors: yes 
+
+
+
+
+
+- name: Ensure application group exists
+  ansible.builtin.group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: Ensure application user exists
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    state: present
+    group: "{{ app_group }}"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+    recurse: yes
+
+- name: Deploy application files from backend directory
+  ansible.builtin.copy:
+    src: ../backend/
+    dest: "{{ app_directory }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+
+- name: Create systemd service unit file
+  ansible.builtin.template:
+    src: ../backend/backend.service
+    dest: "/etc/systemd/system/{{ app_name }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Check if virtual environment already exists
+  ansible.builtin.stat:
+    path: "{{ app_directory }}/venv/bin/activate"
+  register: venv_exists
+
+- name: Create virtual environment if it does not exist
+  ansible.builtin.command: "{{ python_version_to_use }} -m venv {{ app_directory }}/venv"
+  args:
+    creates: "{{ app_directory }}/venv/bin/activate"
+  become_user: "{{ app_user }}"
+  when: not venv_exists.stat.exists
+
+- name: Install or update Python dependencies from requirements.txt
+  ansible.builtin.pip:
+    requirements: "{{ app_directory }}/requirements.txt"
+    virtualenv: "{{ app_directory }}/venv"
+    extra_args: "--upgrade pip"
+  become_user: "{{ app_user }}"
+
+- name: Enable and start the custom service
+  ansible.builtin.systemd:
+    name: "{{ app_name }}.service"
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "5000/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Get systemctl status for {{ app_name }}
+  ansible.builtin.command: systemctl status {{ app_name }}
+  register: service_status_output
+  changed_when: false
+  ignore_errors: yes
+
+- name: Extract and print active status
+  ansible.builtin.debug:
+    msg: "{{ (service_status_output.stdout_lines | select('search', 'Active:') | list)[0] | default('Active status not found') }}"
+
+- name: Fail if service is not active (optional)
+  ansible.builtin.fail:
+    msg: "{{ app_name }} service is not active or failed!"
+  when: service_status_output.rc != 0 or "active (running)" not in service_status_output.stdout
