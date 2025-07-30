@@ -1,5 +1,3 @@
-
-
 - name: Update package cache (RedHat/CentOS/Fedora)
   ansible.builtin.dnf:
     update_cache: yes
@@ -35,32 +33,3 @@
 - name: Display Python 3 version
   ansible.builtin.debug:
     msg: "Python 3 version installed: {{ python_version_output.stdout }}"
-
-
-- name: Install Nginx (RedHat/CentOS/Fedora)
-  ansible.builtin.dnf:
-    name: nginx
-    state: present
-
-- name: Ensure Nginx service is running and enabled
-  ansible.builtin.systemd:
-    name: nginx
-    state: started
-    enabled: yes
-
-- name: Get Nginx version
-  ansible.builtin.command: nginx -v
-  register: nginx_version_output
-  changed_when: false 
-
-- name: Display Nginx version
-  ansible.builtin.debug:
-    msg: "Nginx version installed: {{ nginx_version_output.stderr | regex_replace('^nginx version: ', '') }}"
-
-- name: Open port with firewalld (RedHat/CentOS/Fedora)
-  ansible.posix.firewalld:
-    zone: public           
-    port: "80/tcp"
-    state: enabled         
-    permanent: yes         
-    immediate: yes         

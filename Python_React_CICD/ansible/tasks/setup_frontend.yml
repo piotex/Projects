@@ -1,1 +1,51 @@
 
+- name: Stop Nginx service temporarily (optional, for atomic updates)
+  ansible.builtin.systemd:
+    name: nginx
+    state: stopped
+  ignore_errors: yes
+
+- name: Create Nginx configuration file for the application directly in conf.d
+  ansible.builtin.template:
+    src: ../frontend/nginx-app.conf.j2 
+    dest: "{{ nginx_conf_d_dir }}/{{ app_name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public           
+    port: "8080/tcp"
+    state: enabled         
+    permanent: yes         
+    immediate: yes  
+
+- name: Remove old frontend files (ensure clean deployment)
+  ansible.builtin.file:
+    path: "{{ frontend_app_directory }}"
+    state: absent
+
+- name: Create target directory for frontend
+  ansible.builtin.file:
+    path: "{{ frontend_app_directory }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    mode: '0755'
+    recurse: yes
+
+- name: Copy new React application files to target directory
+  ansible.builtin.copy:
+    src: ../frontend/build/ 
+    dest: "{{ frontend_app_directory }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    mode: '0755'
+
+- name: Start Nginx service
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+

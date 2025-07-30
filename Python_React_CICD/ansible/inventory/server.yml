@@ -19,3 +19,10 @@ app_directory="/opt/backend"
 app_main_file="app.py"
 python_version_to_use="python3" 
 app_port=5000                   
+
+[frontend_server:vars]
+nginx_user="nginx"
+nginx_group="nginx"
+frontend_app_directory="/opt/frontend/build"
+app_name="frontend"
+nginx_conf_d_dir="/etc/nginx/conf.d"

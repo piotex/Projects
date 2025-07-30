@@ -1,45 +1,3 @@
-- name: Stop and disable Flask app service if it exists
-  ansible.builtin.systemd:
-    name: "{{ app_name }}.service"
-    state: stopped
-    enabled: no
-    daemon_reload: yes 
-  ignore_errors: yes 
-
-- name: Remove Flask app systemd service file
-  ansible.builtin.file:
-    path: "/etc/systemd/system/{{ app_name }}.service"
-    state: absent 
-  ignore_errors: yes
-
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: Remove application directory
-  ansible.builtin.file:
-    path: "{{ app_directory }}"
-    state: absent
-  ignore_errors: yes 
-
-- name: Remove application user
-  ansible.builtin.user:
-    name: "{{ app_user }}"
-    state: absent
-    remove: yes 
-    force: yes 
-  ignore_errors: yes 
-
-- name: Remove application group
-  ansible.builtin.group:
-    name: "{{ app_group }}"
-    state: absent
-  ignore_errors: yes 
-
-
-
-
-
 - name: Ensure application group exists
   ansible.builtin.group:
     name: "{{ app_group }}"
@@ -70,9 +28,17 @@
     group: "{{ app_group }}"
     mode: '0755'
 
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "5000/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
 - name: Create systemd service unit file
   ansible.builtin.template:
-    src: ../backend/backend.service
+    src: ../backend/backend.service.j2
     dest: "/etc/systemd/system/{{ app_name }}.service"
     owner: root
     group: root
@@ -103,26 +69,3 @@
     daemon_reload: yes
     state: started
     enabled: yes
-
-- name: Open port with firewalld (RedHat/CentOS/Fedora)
-  ansible.posix.firewalld:
-    zone: public
-    port: "5000/tcp"
-    state: enabled
-    permanent: yes
-    immediate: yes
-
-- name: Get systemctl status for {{ app_name }}
-  ansible.builtin.command: systemctl status {{ app_name }}
-  register: service_status_output
-  changed_when: false
-  ignore_errors: yes
-
-- name: Extract and print active status
-  ansible.builtin.debug:
-    msg: "{{ (service_status_output.stdout_lines | select('search', 'Active:') | list)[0] | default('Active status not found') }}"
-
-- name: Fail if service is not active (optional)
-  ansible.builtin.fail:
-    msg: "{{ app_name }} service is not active or failed!"
-  when: service_status_output.rc != 0 or "active (running)" not in service_status_output.stdout
