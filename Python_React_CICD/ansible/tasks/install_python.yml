@@ -1,6 +1,6 @@
-- name: Update package cache (RedHat/CentOS/Fedora)
-  ansible.builtin.dnf:
-    update_cache: yes
+# - name: Update package cache (RedHat/CentOS/Fedora)
+#   ansible.builtin.dnf:
+#     update_cache: yes
 
 - name: Install EPEL repo for newer Python (RedHat/CentOS/Fedora)
   ansible.builtin.dnf:

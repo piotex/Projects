@@ -1,15 +1,15 @@
 - name: Stop and disable Flask app service if it exists
   ansible.builtin.systemd:
-    name: "{{ app_name }}.service"
+    name: "{{ backend_name }}.service"
     state: stopped
     enabled: no
-    daemon_reload: yes 
-  ignore_errors: yes 
+    daemon_reload: yes
+  ignore_errors: yes
 
 - name: Remove Flask app systemd service file
   ansible.builtin.file:
-    path: "/etc/systemd/system/{{ app_name }}.service"
-    state: absent 
+    path: "/etc/systemd/system/{{ backend_name }}.service"
+    state: absent
   ignore_errors: yes
 
 - name: Reload systemd daemon
@@ -18,20 +18,20 @@
 
 - name: Remove application directory
   ansible.builtin.file:
-    path: "{{ app_directory }}"
+    path: "{{backend_app_directory }}"
     state: absent
-  ignore_errors: yes 
+  ignore_errors: yes
 
 - name: Remove application user
   ansible.builtin.user:
-    name: "{{ app_user }}"
+    name: "{{ python_user }}"
     state: absent
-    remove: yes 
-    force: yes 
-  ignore_errors: yes 
+    remove: yes
+    force: yes
+  ignore_errors: yes
 
 - name: Remove application group
   ansible.builtin.group:
-    name: "{{ app_group }}"
+    name: "{{ python_group }}"
     state: absent
-  ignore_errors: yes 
+  ignore_errors: yes

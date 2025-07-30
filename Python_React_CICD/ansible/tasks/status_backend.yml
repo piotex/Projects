@@ -1,6 +1,5 @@
-
-- name: Get systemctl status for {{ app_name }}
-  ansible.builtin.command: systemctl status {{ app_name }}
+- name: Get systemctl status for {{ backend_name }}
+  ansible.builtin.command: systemctl status {{ backend_name }}
   register: service_status_output
   changed_when: false
   ignore_errors: yes
@@ -11,5 +10,5 @@
 
 - name: Fail if service is not active (optional)
   ansible.builtin.fail:
-    msg: "{{ app_name }} service is not active or failed!"
+    msg: "{{ backend_name }} service is not active or failed!"
   when: service_status_output.rc != 0 or "active (running)" not in service_status_output.stdout

@@ -3,10 +3,10 @@ Description=Backend App
 After=network.target
 
 [Service]
-User={{ app_user }}
-Group={{ app_group }}
-WorkingDirectory={{ app_directory }}
-ExecStart={{ app_directory }}/venv/bin/{{ python_version_to_use }} {{ app_directory }}/{{ app_main_file }}
+User={{ python_user }}
+Group={{ python_group }}
+WorkingDirectory={{backend_app_directory }}
+ExecStart={{backend_app_directory }}/venv/bin/{{ python_version_to_use }} {{backend_app_directory }}/{{ backend_main_file }}
 
 Type=simple
 Restart=always

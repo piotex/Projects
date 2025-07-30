@@ -1,32 +1,32 @@
 - name: Ensure application group exists
   ansible.builtin.group:
-    name: "{{ app_group }}"
+    name: "{{ python_group }}"
     state: present
 
 - name: Ensure application user exists
   ansible.builtin.user:
-    name: "{{ app_user }}"
+    name: "{{ python_user }}"
     state: present
-    group: "{{ app_group }}"
+    group: "{{ python_group }}"
     shell: /bin/bash
     create_home: yes
 
 - name: Create application directory
   ansible.builtin.file:
-    path: "{{ app_directory }}"
+    path: "{{backend_app_directory }}"
     state: directory
-    owner: "{{ app_user }}"
-    group: "{{ app_group }}"
-    mode: '0755'
+    owner: "{{ python_user }}"
+    group: "{{ python_group }}"
+    mode: "0755"
     recurse: yes
 
 - name: Deploy application files from backend directory
   ansible.builtin.copy:
     src: ../backend/
-    dest: "{{ app_directory }}"
-    owner: "{{ app_user }}"
-    group: "{{ app_group }}"
-    mode: '0755'
+    dest: "{{backend_app_directory }}"
+    owner: "{{ python_user }}"
+    group: "{{ python_group }}"
+    mode: "0755"
 
 - name: Open port with firewalld (RedHat/CentOS/Fedora)
   ansible.posix.firewalld:
@@ -39,33 +39,33 @@
 - name: Create systemd service unit file
   ansible.builtin.template:
     src: ../backend/backend.service.j2
-    dest: "/etc/systemd/system/{{ app_name }}.service"
+    dest: "/etc/systemd/system/{{ backend_name }}.service"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Check if virtual environment already exists
   ansible.builtin.stat:
-    path: "{{ app_directory }}/venv/bin/activate"
+    path: "{{backend_app_directory }}/venv/bin/activate"
   register: venv_exists
 
 - name: Create virtual environment if it does not exist
-  ansible.builtin.command: "{{ python_version_to_use }} -m venv {{ app_directory }}/venv"
+  ansible.builtin.command: "{{ python_version_to_use }} -m venv {{backend_app_directory }}/venv"
   args:
-    creates: "{{ app_directory }}/venv/bin/activate"
-  become_user: "{{ app_user }}"
+    creates: "{{backend_app_directory }}/venv/bin/activate"
+  become_user: "{{ python_user }}"
   when: not venv_exists.stat.exists
 
 - name: Install or update Python dependencies from requirements.txt
   ansible.builtin.pip:
-    requirements: "{{ app_directory }}/requirements.txt"
-    virtualenv: "{{ app_directory }}/venv"
+    requirements: "{{backend_app_directory }}/requirements.txt"
+    virtualenv: "{{backend_app_directory }}/venv"
     extra_args: "--upgrade pip"
-  become_user: "{{ app_user }}"
+  become_user: "{{ python_user }}"
 
 - name: Enable and start the custom service
   ansible.builtin.systemd:
-    name: "{{ app_name }}.service"
+    name: "{{ backend_name }}.service"
     daemon_reload: yes
     state: started
     enabled: yes
