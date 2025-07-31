@@ -15,7 +15,7 @@
 - name: Open port with firewalld (RedHat/CentOS/Fedora)
   ansible.posix.firewalld:
     zone: public
-    port: "8080/tcp"
+    port: "{{frontend_port}}/tcp"
     state: enabled
     permanent: yes
     immediate: yes

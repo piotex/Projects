@@ -1,10 +1,10 @@
-[devops_server]
-192.168.56.110
-
 [backend_server]
 192.168.56.110
 
 [frontend_server]
+192.168.56.110
+
+[jenkins_server]
 192.168.56.110
 
 [all:vars]
@@ -23,10 +23,16 @@ python_version_to_use="python3"
 [frontend_server:vars]
 frontend_name="frontend"
 frontend_app_directory="/opt/frontend/build"
-frontend_port=8080                   
+frontend_port=5001                   
 nginx_user="nginx"
 nginx_group="nginx"
 nginx_conf_d_dir="/etc/nginx/conf.d"
 
-
+[jenkins_server:vars]
+jenkins_user=jenkins
+jenkins_group=jenkins
+jenkins_home=/opt/jenkins
+jenkins_war_url="https://get.jenkins.io/war-stable/2.516.1/jenkins.war"
+jenkins_http_port=5002
+jenkins_casc_config_dir=/var/lib/jenkins/casc_configs
 

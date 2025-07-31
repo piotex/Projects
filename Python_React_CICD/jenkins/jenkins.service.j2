@@ -1,0 +1,12 @@
+[Unit]
+Description=Jenkins Continuous Integration Server
+After=network.target
+
+[Service]
+User={{ jenkins_user }}
+Group={{ jenkins_group }}
+ExecStart=/usr/bin/java -jar {{ jenkins_home }}/jenkins.war --httpPort={{ jenkins_http_port }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

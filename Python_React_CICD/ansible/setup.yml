@@ -1,24 +1,30 @@
 ---
-- hosts: all
+# - hosts: all
+#   become: yes
+#   gather_facts: no
+#   tasks:
+#     - include_tasks: tasks/update_all.yml
+
+# - hosts: backend_server
+#   become: yes
+#   gather_facts: no
+#   tasks:    
+#     - include_tasks: tasks/install_python.yml
+#     - include_tasks: tasks/remove_backend.yml
+#     - include_tasks: tasks/setup_backend.yml
+#     - include_tasks: tasks/status_backend.yml
+
+# - hosts: frontend_server
+#   become: yes
+#   gather_facts: no
+#   tasks:
+#     - include_tasks: tasks/install_nginx.yml
+#     - include_tasks: tasks/setup_frontend.yml
+
+- hosts: jenkins_server
   become: yes
   gather_facts: no
   tasks:
-    - include_tasks: tasks/update_all.yml
-
-- hosts: backend_server
-  become: yes
-  gather_facts: no
-  tasks:    
-    - include_tasks: tasks/install_python.yml
-    - include_tasks: tasks/remove_backend.yml
-    - include_tasks: tasks/setup_backend.yml
-    - include_tasks: tasks/status_backend.yml
-
-- hosts: frontend_server
-  become: yes
-  gather_facts: no
-  tasks:
-    - include_tasks: tasks/install_nginx.yml
-    - include_tasks: tasks/setup_frontend.yml
+    - include_tasks: tasks/install_jenkins.yml
 
 

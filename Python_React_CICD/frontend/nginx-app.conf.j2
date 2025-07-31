@@ -1,6 +1,6 @@
 server {
     listen {{ frontend_port }};
-    server_name {{ backend_name }};
+    server_name {{ frontend_name }};
 
     root {{ frontend_app_directory }};
     index index.html;
