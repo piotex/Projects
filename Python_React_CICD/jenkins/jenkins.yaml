@@ -1,24 +1,24 @@
 jenkins:
+  authorizationStrategy: unsecured
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
   labelAtoms:
-  - name: "built-in"
+    - name: "built-in"
   markupFormatter: "plainText"
   mode: NORMAL
-  myViewsTabBar: "standard"
   nodeMonitors:
-  - "architecture"
-  - "clock"
-  - diskSpace:
-      freeSpaceThreshold: "1GiB"
-      freeSpaceWarningThreshold: "2GiB"
-  - "swapSpace"
-  - tmpSpace:
-      freeSpaceThreshold: "1GiB"
-      freeSpaceWarningThreshold: "2GiB"
-  - "responseTime"
+    - "architecture"
+    - "clock"
+    - diskSpace:
+        freeSpaceThreshold: "1GiB"
+        freeSpaceWarningThreshold: "2GiB"
+    - "swapSpace"
+    - tmpSpace:
+        freeSpaceThreshold: "1GiB"
+        freeSpaceWarningThreshold: "2GiB"
+    - "responseTime"
   numExecutors: 2
   primaryView:
     all:
@@ -31,11 +31,11 @@ jenkins:
   slaveAgentPort: 50000
   updateCenter:
     sites:
-    - id: "default"
-      url: "https://updates.jenkins.io/update-center.json"
+      - id: "default"
+        url: "https://updates.jenkins.io/update-center.json"
   views:
-  - all:
-      name: "all"
+    - all:
+        name: "all"
   viewsTabBar: "standard"
 globalCredentialsConfiguration:
   configuration:
@@ -51,6 +51,7 @@ appearance:
     theme: PRISM
   themeManager:
     disableUserThemes: false
+    theme: "noOp"
 security:
   apiToken:
     creationOfLegacyTokenEnabled: false
@@ -68,7 +69,7 @@ security:
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:
-    - "jobBuildDiscarder"
+      - "jobBuildDiscarder"
   buildStepOperation:
     enabled: false
   email-ext:
@@ -82,7 +83,7 @@ unclassified:
       Check console output at $BUILD_URL to view the results.
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     defaultTriggerIds:
-    - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
+      - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
     maxAttachmentSize: -1
     maxAttachmentSizeMb: -1
     precedenceBulk: false
@@ -99,10 +100,10 @@ unclassified:
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
-    hookUrl: "http://10.10.10.10:8080/github-webhook/"
+    hookUrl: "http://192.168.56.110:5002/github-webhook/"
   globalTimeOutConfiguration:
     operations:
-    - "abortOperation"
+      - "abortOperation"
     overwriteable: false
   injectionConfig:
     allowUntrusted: false
@@ -115,6 +116,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "adres jeszcze nie jest skonfigurowany <nobody@nowhere>"
+    url: "http://192.168.56.110:5002/"
   mailer:
     charset: "UTF-8"
     useSsl: false
@@ -136,8 +138,8 @@ unclassified:
 tool:
   git:
     installations:
-    - home: "git"
-      name: "Default"
+      - home: "git"
+        name: "Default"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"

@@ -1,4 +1,3 @@
-
 - name: Install required dependencies (fontconfig, Java 21 OpenJDK)
   ansible.builtin.dnf:
     name:
@@ -18,6 +17,9 @@
     create_home: no
     shell: /sbin/nologin
 
+
+
+
 - name: Stop Jenkins service if running
   ansible.builtin.service:
     name: jenkins
@@ -30,6 +32,14 @@
     state: absent
   ignore_errors: true
 
+- name: Remove existing Jenkins home
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}"
+    state: absent
+  ignore_errors: true
+
+
+
 - name: Create Jenkins home directory
   ansible.builtin.file:
     path: "{{ jenkins_home }}"
@@ -37,6 +47,14 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: '0755'
+
+- name: Deploy manual jenkins.service file
+  ansible.builtin.template:
+    src: ../jenkins/jenkins.service.j2
+    dest: /etc/systemd/system/jenkins.service
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Download jenkins.war manually via get_url if not present or changed
   ansible.builtin.get_url:
@@ -47,6 +65,68 @@
     group: "{{ jenkins_group }}"
     force: yes
 
+
+
+- name: Reload systemd daemon after service file change
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable and start Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    state: restarted
+    enabled: yes
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "{{jenkins_http_port}}/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Wait for Jenkins to be ready
+  ansible.builtin.uri:
+    url: "http://localhost:{{ jenkins_http_port }}/login"
+    status_code: 200
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: 10
+  delay: 15
+  changed_when: false
+
+
+
+- name: Load plugin list from file
+  ansible.builtin.set_fact:
+    jenkins_plugins: "{{ lookup('file', '../jenkins/plugins.txt').splitlines() }}"
+
+- name: Read initial admin password
+  ansible.builtin.command: cat /opt/jenkins/secrets/initialAdminPassword
+  register: initial_password_command_output
+
+- name: Set password as a fact
+  ansible.builtin.set_fact:
+    jenkins_initial_password: "{{ initial_password_command_output.stdout | trim }}"
+
+- name: Install Jenkins plugins from list
+  community.general.jenkins_plugin:
+    name: "{{ item }}"
+    state: present
+    url: http://192.168.56.110:5002
+    url_username: admin 
+    url_password: "{{ jenkins_initial_password }}" 
+  loop: "{{ jenkins_plugins }}"
+
+
+
+- name: Remove existing Jenkins casc
+  ansible.builtin.file:
+    path: "{{ jenkins_casc_config_dir }}"
+    state: absent
+  ignore_errors: true
+
 - name: Ensure Jenkins JCasC configuration directory exists
   ansible.builtin.file:
     path: "{{ jenkins_casc_config_dir }}"
@@ -55,9 +135,17 @@
     group: "{{ jenkins_group }}"
     mode: '0755'
 
-- name: Deploy manual jenkins.service file
+- name: Copy JCasC configuration file to remote host
+  ansible.builtin.copy:
+    src: "../jenkins/jenkins.yaml"
+    dest: "{{ jenkins_casc_config_dir }}/jenkins.yaml"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: '0644'
+
+- name: Deploy manual jenkins.service file with JCasC 
   ansible.builtin.template:
-    src: ../jenkins/jenkins.service.j2
+    src: ../jenkins/jenkins.service.jcasc.j2
     dest: /etc/systemd/system/jenkins.service
     owner: root
     group: root
@@ -75,63 +163,11 @@
   register: jenkins_service
   until: jenkins_service is succeeded
   retries: 3
-  delay: 5
-
-- name: Open port with firewalld (RedHat/CentOS/Fedora)
-  ansible.posix.firewalld:
-    zone: public
-    port: "{{jenkins_http_port}}/tcp"
-    state: enabled
-    permanent: yes
-    immediate: yes
-
-- name: Wait for Jenkins to be ready
-  ansible.builtin.uri:
-    url: "http://localhost:{{ jenkins_http_port }}/login"
-    status_code: 200
-    validate_certs: false
-  register: _result
-  until: _result.status == 200
-  retries: 60
-  delay: 5
-  changed_when: false
-
-- name: Load plugin list from file
-  ansible.builtin.set_fact:
-    jenkins_plugins: "{{ lookup('file', '../jenkins/plugins.txt').splitlines() }}"
-
-- name: Read initial admin password
-  ansible.builtin.command: cat /var/lib/jenkins/.jenkins/secrets/initialAdminPassword
-  register: initial_password_command_output
-
-- name: Set password as a fact
-  ansible.builtin.set_fact:
-    jenkins_initial_password: "{{ initial_password_command_output.stdout | trim }}"
-
-- name: Install Jenkins plugins from list
-  community.general.jenkins_plugin:
-    name: "{{ item }}"
-    state: present
-    url: http://192.168.56.110:5002
-    url_username: admin 
-    url_password: "{{ jenkins_initial_password }}" 
-  loop: "{{ jenkins_plugins }}"
-
-- name: Restart Jenkins after plugin installation
-  ansible.builtin.service:
-    name: jenkins
-    state: restarted
-
-- name: Copy JCasC configuration file to remote host
-  ansible.builtin.copy:
-    src: "../jenkins/jenkins.yaml"
-    dest: "{{ jenkins_casc_config_dir }}/jenkins.yaml"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
-    mode: '0644'
+  delay: 15
 
 - name: Restart Jenkins to apply JCasC configuration
   ansible.builtin.service:
     name: jenkins
     state: restarted
     enabled: yes
+

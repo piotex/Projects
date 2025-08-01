@@ -8,10 +8,15 @@ Group={{ jenkins_group }}
 Environment="JENKINS_HOME={{ jenkins_home }}"
 
 ExecStart=/usr/bin/java \
+  -Djava.awt.headless=true \
+  -Djenkins.install.runSetupWizard=false \
+  -Dcasc.jenkins.config={{ jenkins_casc_config_dir }}/jenkins.yaml \
   -jar {{ jenkins_home }}/jenkins.war \
-  --httpPort={{ jenkins_http_port }}  
+  --httpPort={{ jenkins_http_port }}  \
+  --webroot=/var/cache/jenkins/war 
 
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
+
