@@ -1,4 +1,4 @@
-pipelineJob('my-github-pipeline') {
+pipeline('my-github-pipeline') {
     definition {
         scm {
             git {
