@@ -1,26 +1,29 @@
-pipeline {
-    agent any
-    stages {
-        stage('Hello World') {
-            steps {
-                echo 'Witaj, świecie! To mój pierwszy Jenkins Pipeline.'
+pipelineJob('deploy') {
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/jenkinsci/job-dsl-plugin.git')
+                    }
+                    branch('main') 
+                }
             }
+            scriptPath('Python_React_CICD/jenkins/seedjob.groovy') 
         }
     }
 }
 
-multibranchPipelineJob('example') {
-    branchSources {
-        git {
-            id('123456789') // IMPORTANT: use a constant and unique identifier
-            remote('https://github.com/jenkinsci/job-dsl-plugin.git')
-            credentialsId('github-ci')
-            includes('JENKINS-*')
-        }
-    }
-    orphanedItemStrategy {
-        discardOldItems {
-            numToKeep(20)
-        }
-    }
-}
+// multibranchPipelineJob('multibranch-cicd') {
+//     branchSources {
+//         git {
+//             id('multibranch-cicd') 
+//             remote('https://github.com/jenkinsci/job-dsl-plugin.git')
+//         }
+//     }
+//     orphanedItemStrategy {
+//         discardOldItems {
+//             numToKeep(20)
+//         }
+//     }
+// }
