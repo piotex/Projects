@@ -1,6 +1,11 @@
-jobDsl('example-99') {
-    logRotator(-1, 10)
-    steps {
-        sh('echo gittt')
-    }
+jobDsl {
+    script '''
+        pipelineJob('my-new-pipeline') {
+            definition {
+                cps {
+                    script('node { echo "Hello from new pipeline" }')
+                }
+            }
+        }
+    '''
 }
