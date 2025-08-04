@@ -1,0 +1,24 @@
+- name: Stop Jenkins service if running
+  ansible.builtin.service:
+    name: jenkins
+    state: stopped
+  ignore_errors: true
+
+- name: Copy JCasC configuration file to remote host
+  ansible.builtin.copy:
+    src: "../jenkins/jenkins.yaml"
+    dest: "{{ jenkins_casc_config_dir }}/jenkins.yaml"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: '0644'
+
+- name: Enable and start Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    state: restarted
+    enabled: yes
+  register: jenkins_service
+  until: jenkins_service is succeeded
+  retries: 3
+  delay: 15
+

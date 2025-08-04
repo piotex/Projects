@@ -89,3 +89,4 @@ email-ext
 theme-manager
 dark-theme
 configuration-as-code
+job-dsl

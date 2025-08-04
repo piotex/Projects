@@ -25,8 +25,8 @@ jenkins:
       name: "all"
   projectNamingStrategy: "standard"
   quietPeriod: 5
-  remotingSecurity:
-    enabled: true
+  # remotingSecurity:
+  #   enabled: true
   scmCheckoutRetryCount: 0
   slaveAgentPort: 50000
   updateCenter:
@@ -143,3 +143,43 @@ tool:
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
+
+jobs:
+  - script: >
+      folder('testjobs')
+  - script: >
+      pipelineJob('testjobs/default-agent') {
+        definition {
+          cps {
+            script("""\
+              pipeline {
+                agent any
+                stages {
+                  stage ('test') {
+                    steps {
+                      echo "hello"
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  # - script: >
+  #     pipelineJob('job-A') {
+  #       definition {
+  #         cpsScm {
+  #           scm {
+  #             git {
+  #               remote {
+  #                 url('https://www.my-company.com/jenkins-jobs-repo.git')
+  #                 credentials('creds')
+  #               }
+  #               branch('*/main')
+  #             }
+  #           }
+  #           scriptPath('jenkins/pipelines/pipeline1.groovy')
+  #           lightweight()
+  #         }
+  #       }
+  #     }

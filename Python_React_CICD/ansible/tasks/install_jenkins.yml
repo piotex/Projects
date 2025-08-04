@@ -18,8 +18,6 @@
     shell: /sbin/nologin
 
 
-
-
 - name: Stop Jenkins service if running
   ansible.builtin.service:
     name: jenkins
@@ -37,7 +35,6 @@
     path: "{{ jenkins_home }}"
     state: absent
   ignore_errors: true
-
 
 
 - name: Create Jenkins home directory
@@ -64,7 +61,6 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     force: yes
-
 
 
 - name: Reload systemd daemon after service file change
@@ -97,7 +93,6 @@
   changed_when: false
 
 
-
 - name: Load plugin list from file
   ansible.builtin.set_fact:
     jenkins_plugins: "{{ lookup('file', '../jenkins/plugins.txt').splitlines() }}"
@@ -118,7 +113,6 @@
     url_username: admin 
     url_password: "{{ jenkins_initial_password }}" 
   loop: "{{ jenkins_plugins }}"
-
 
 
 - name: Remove existing Jenkins casc
@@ -158,16 +152,10 @@
 - name: Enable and start Jenkins service
   ansible.builtin.service:
     name: jenkins
-    state: started
+    state: restarted
     enabled: yes
   register: jenkins_service
   until: jenkins_service is succeeded
   retries: 3
   delay: 15
-
-- name: Restart Jenkins to apply JCasC configuration
-  ansible.builtin.service:
-    name: jenkins
-    state: restarted
-    enabled: yes
 
