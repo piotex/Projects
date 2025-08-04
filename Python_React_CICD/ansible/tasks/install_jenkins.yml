@@ -3,6 +3,7 @@
     name:
       - fontconfig
       - java-21-openjdk-devel
+      - git
     state: present
 
 - name: Create jenkins user and group if not exists
