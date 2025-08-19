@@ -1,8 +1,11 @@
 
+ssh-keygen -f '/home/peter/.ssh/known_hosts' -R '192.168.56.110'
+
 # ======= On Remote Machine =============================================
-sudo useradd -m -s /bin/bash ansible_user
-sudo usermod -aG sudo ansible_user || true
-sudo usermod -aG wheel ansible_user || true
+sudo su
+sudo useradd -m -s /bin/bash ansible_user   || true
+sudo usermod -aG sudo ansible_user          || true
+sudo usermod -aG wheel ansible_user         || true
 echo "ansible_user:ansible_pwd" | sudo chpasswd
 echo "ansible_user ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
 # =======================================================================

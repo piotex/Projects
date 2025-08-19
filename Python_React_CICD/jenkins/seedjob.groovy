@@ -25,7 +25,7 @@ multibranchPipelineJob('multibranch-pipeline') {
 }
 pipelineJob("deploy") {
     displayName('deploy')
-    description("Deploys.")
+    description("Deploys")
     definition {
         cpsScm {
             scm {
