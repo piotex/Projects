@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Clock</title>
+    <style>
+      /* General styles and background */
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(165deg, #1e3c72, #982a86);
+        color: white;
+        padding: 20px;
+        transition: background 0.5s ease-in-out;
+      }
+
+      /* Main container */
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        padding: 20px;
+        max-width: 900px;
+        width: 100%;
+      }
+
+      /* Clock section */
+      .clock-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* Main analog clock */
+      .analog-clock {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border: 3px solid rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        margin: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .analog-clock::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+      }
+
+      .hand {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 50%;
+        height: 2px;
+        background: white;
+        transform-origin: 0% 50%;
+        transform: rotate(90deg);
+        transition: transform 0.05s linear;
+      }
+
+      .hour-hand {
+        width: 30%;
+        transform: rotate(90deg);
+      }
+
+      .minute-hand {
+        width: 40%;
+        transform: rotate(90deg);
+      }
+
+      .second-hand {
+        width: 45%;
+        height: 1px;
+        background: #ff4c4c;
+        transform: rotate(90deg);
+      }
+
+      /* Main digital clock */
+      #digital-time {
+        font-size: clamp(2em, 5vw, 3em);
+        font-weight: bold;
+        margin: 0;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        margin: 0 40px 0px 40px;
+      }
+
+      /* World clocks section */
+      .world-times {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        font-size: 0.9em;
+        text-align: center;
+        flex-wrap: wrap;
+      }
+
+      .city {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 100px;
+      }
+
+      .city-name {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      /* Clock container with dynamic ring fill */
+      .city-clock-container {
+        --fill-angle: 0deg; /* CSS custom property for the angle */
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+        background-image: radial-gradient(
+            circle at 50% 50%,
+            rgba(100, 50, 125, 1) 45px,
+            transparent 40px
+          ),
+          /* Conic gradient for the filled ring */
+            conic-gradient(
+              from 0deg,
+              rgba(100, 50, 125, 1) var(--fill-angle),
+              rgb(255, 255, 255) var(--fill-angle)
+            );
+        background-color: transparent;
+        transition: background-image 0.5s ease-out; /* Smooth transition */
+      }
+
+      /* Text inside the ring */
+      .city-clock {
+        position: relative;
+        z-index: 2;
+        font-size: 1.3em;
+        font-weight: bold;
+        line-height: 1.2em;
+        padding: 5px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="clock-section">
+        <!-- Main analog clock -->
+        <div class="analog-clock">
+          <div class="hand hour-hand" id="hour-hand"></div>
+          <div class="hand minute-hand" id="minute-hand"></div>
+          <div class="hand second-hand" id="second-hand"></div>
+        </div>
+        <!-- Main digital clock -->
+        <div id="digital-time">Ładowanie...</div>
+        <div class="world-times">
+          <!-- London Clock -->
+          <div class="city">
+            <div class="city-name">Londyn</div>
+            <div class="city-clock-container" id="london-container">
+              <div class="city-clock" id="london-time">--:--</div>
+            </div>
+          </div>
+          <!-- Tokyo Clock -->
+          <div class="city">
+            <div class="city-name">Tokio</div>
+            <div class="city-clock-container" id="tokyo-container">
+              <div class="city-clock" id="tokyo-time">--:--</div>
+            </div>
+          </div>
+          <!-- Sydney Clock -->
+          <div class="city">
+            <div class="city-name">Sydney</div>
+            <div class="city-clock-container" id="sydney-container">
+              <div class="city-clock" id="sydney-time">--:--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function updateClock() {
+        let now;
+        try {
+          const response = await fetch("http://127.0.0.1:9999/");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const dateString = data.time;
+          now = new Date(dateString);
+
+          if (isNaN(now.getTime())) {
+            throw new Error("Invalid date received from the server.");
+          }
+        } catch (error) {
+          document.getElementById("digital-time").textContent =
+            "Connection error";
+          console.error("Error fetching or parsing date:", error);
+          return;
+        }
+
+        // Calculations for the main analog clock
+        const second = now.getSeconds();
+        const minute = now.getMinutes();
+        const hour = now.getHours();
+
+        const secondDeg = (second / 60) * 360;
+        const minuteDeg = (minute / 60) * 360 + (second / 60) * 6;
+        const hourDeg = (hour / 12) * 360 + (minute / 60) * 30;
+
+        document.getElementById("second-hand").style.transform = `rotate(${
+          secondDeg + 90
+        }deg)`;
+        document.getElementById("minute-hand").style.transform = `rotate(${
+          minuteDeg + 90
+        }deg)`;
+        document.getElementById("hour-hand").style.transform = `rotate(${
+          hourDeg + 90
+        }deg)`;
+
+        // Update the main digital clock
+        const formattedTime = now.toLocaleTimeString("pl-PL", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        });
+        document.getElementById("digital-time").textContent = formattedTime;
+
+        // --- New calculations for world clocks ---
+
+        const timezones = [
+          { id: "london", name: "Europe/London" },
+          { id: "tokyo", name: "Asia/Tokyo" },
+          { id: "sydney", name: "Australia/Sydney" },
+        ];
+
+        timezones.forEach((tz) => {
+          const cityTime = new Date(
+            now.toLocaleString("en-US", { timeZone: tz.name })
+          );
+
+          const totalMinutesInDay = 24 * 60;
+          const minutesPassed =
+            cityTime.getHours() * 60 + cityTime.getMinutes();
+          const minutesRemaining = totalMinutesInDay - minutesPassed;
+
+          const fillPercentage = 1 - minutesPassed / totalMinutesInDay;
+          const fillAngle = fillPercentage * 360;
+
+          const containerElement = document.getElementById(
+            `${tz.id}-container`
+          );
+          containerElement.style.setProperty("--fill-angle", `${fillAngle}deg`);
+        });
+
+        document.getElementById(
+          "second-hand"
+        ).style.transform = `rotate(${secondDeg}deg)`;
+        document.getElementById(
+          "minute-hand"
+        ).style.transform = `rotate(${minuteDeg}deg)`;
+        document.getElementById(
+          "hour-hand"
+        ).style.transform = `rotate(${hourDeg}deg)`;
+
+        document.getElementById("digital-time").textContent = formattedTime;
+
+        document.getElementById("london-time").textContent =
+          now.toLocaleTimeString("en-GB", {
+            timeZone: "Europe/London",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        document.getElementById("tokyo-time").textContent =
+          now.toLocaleTimeString("ja-JP", {
+            timeZone: "Asia/Tokyo",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        document.getElementById("sydney-time").textContent =
+          now.toLocaleTimeString("en-AU", {
+            timeZone: "Australia/Sydney",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+      }
+
+      // Call the function on page load and every second
+      updateClock();
+      setInterval(updateClock, 1000);
+    </script>
+  </body>
+</html>
