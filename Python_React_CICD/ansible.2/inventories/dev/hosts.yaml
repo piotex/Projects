@@ -1,0 +1,9 @@
+[backend_server]
+192.168.56.110
+
+[frontend_server]
+192.168.56.110
+
+[jenkins_server]
+192.168.56.110
+

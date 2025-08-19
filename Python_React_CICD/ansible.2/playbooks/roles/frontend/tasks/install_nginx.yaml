@@ -1,0 +1,65 @@
+- name: Uninstall Nginx (RedHat/CentOS/Fedora)
+  ansible.builtin.dnf:
+    name: nginx
+    state: absent
+
+- name: Install Nginx (RedHat/CentOS/Fedora)
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+
+- name: Deploy nginx configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create the frontend application directory
+  ansible.builtin.file:
+    path: "{{ frontend_app_directory }}"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0755'
+
+- name: Copy index.html to Nginx root
+  ansible.builtin.copy:
+    src: index.html
+    dest: "{{ frontend_app_directory }}/index.html"
+    owner: nginx
+    group: nginx
+    mode: '0644'
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "{{frontend_port}}/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Allow Nginx to bind to custom port with SELinux
+  community.general.seport:
+    ports: "{{ frontend_port }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+- name: Ensure Nginx service is running and enabled
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+- name: Get Nginx version
+  ansible.builtin.command: nginx -v
+  register: nginx_version_output
+  changed_when: false 
+
+- name: Display Nginx version
+  ansible.builtin.debug:
+    msg: "Nginx version installed: {{ nginx_version_output.stderr | regex_replace('^nginx version: ', '') }}"
+       
+

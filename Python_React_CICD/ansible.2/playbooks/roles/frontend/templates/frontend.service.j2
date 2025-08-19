@@ -1,0 +1,15 @@
+[Unit]
+Description=Frontend React Application Deployment
+After=network.target nginx.service
+
+[Service]
+Type=simple
+ExecStart=/bin/true 
+# ExecStartPost=/usr/bin/systemctl reload nginx 
+
+# User={{ nginx_user }} 
+
+RemainAfterExit=yes 
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+---
+- name: Install Nginx
+  import_tasks: install_nginx.yaml
+
+- name: Configure Nginx
+  import_tasks: configure_nginx.yaml
+
+# - name: Deploy React app
+#   import_tasks: deploy_react.yaml
+
+# - name: Copy frontend source code
+#   import_tasks: copy_code.yaml

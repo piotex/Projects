@@ -1,0 +1,3 @@
+frontend_port: 5009
+frontend_name: "your.domain.com"
+frontend_app_directory: "/var/www/html/app"
