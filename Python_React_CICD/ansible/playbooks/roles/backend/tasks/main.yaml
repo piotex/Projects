@@ -1,0 +1,4 @@
+---
+- name: Install backend
+  import_tasks: install_backend.yaml
+

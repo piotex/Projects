@@ -1,0 +1,7 @@
+backend_port: 9080
+backend_user: "backend"
+backend_path: "/opt/apps/backend"
+backend_venv_path: "{{ backend_path }}/venv"
+gunicorn_bind: "0.0.0.0:{{ backend_port }}"
+gunicorn_workers: 3
+gunicorn_app_file: "app.py"

@@ -1,7 +1,7 @@
-- name: Uninstall Nginx (RedHat/CentOS/Fedora)
-  ansible.builtin.dnf:
-    name: nginx
-    state: absent
+# - name: Uninstall Nginx (RedHat/CentOS/Fedora)
+#   ansible.builtin.dnf:
+#     name: nginx
+#     state: absent
 
 - name: Install Nginx (RedHat/CentOS/Fedora)
   ansible.builtin.dnf:

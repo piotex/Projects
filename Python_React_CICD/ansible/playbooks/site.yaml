@@ -1,0 +1,21 @@
+---
+# - name: Configure and deploy frontend
+#   hosts: frontend_server
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - frontend
+
+- name: Configure and deploy backend
+  hosts: backend_server
+  become: true
+  gather_facts: false
+  roles:
+    - backend
+
+# - name: Configure and deploy jenkins
+#   hosts: jenkins_server
+#   become: true
+  # gather_facts: false
+#   roles:
+#     - jenkins

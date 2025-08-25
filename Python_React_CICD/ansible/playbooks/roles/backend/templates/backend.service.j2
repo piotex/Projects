@@ -1,0 +1,17 @@
+[Unit]
+Description=Gunicorn instance to serve Flask backend application
+After=network.target
+
+[Service]
+User={{ backend_user }}
+Group={{ backend_user }}
+WorkingDirectory={{ backend_path }}
+Environment="PATH={{ backend_venv_path }}/bin"
+ExecStart={{ backend_venv_path }}/bin/gunicorn \
+    --workers {{ gunicorn_workers | default(3) }} \
+    --bind {{ gunicorn_bind }} \
+    --log-file - \
+    {{ gunicorn_app_file | default('app') | regex_replace('\\.py$','') }}:app
+
+[Install]
+WantedBy=multi-user.target
