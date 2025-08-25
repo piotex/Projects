@@ -1,0 +1,14 @@
+[Unit]
+Description=Flask Backend Service
+After=network.target
+
+[Service]
+User=peter
+Group=peter
+WorkingDirectory=/opt/backend
+Environment="PATH=/opt/backend/venv/bin"
+ExecStart=/opt/backend/venv/bin/gunicorn -w 4 -b 0.0.0.0:8090 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
