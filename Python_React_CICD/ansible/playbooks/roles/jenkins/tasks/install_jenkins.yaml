@@ -62,13 +62,10 @@
     immediate: yes
 
 - name: Wait for Jenkins to be ready
-  ansible.builtin.uri:
-    url: "http://localhost:{{ jenkins_http_port }}/login"
-    status_code: 200
-    validate_certs: false
-  register: _result
-  until: _result.status == 200
-  retries: 30
-  delay: 15
-  changed_when: false
+  ansible.builtin.wait_for:
+    port: "{{ jenkins_http_port }}"
+    host: localhost
+    state: present
+    delay: 60
+    timeout: 180
 

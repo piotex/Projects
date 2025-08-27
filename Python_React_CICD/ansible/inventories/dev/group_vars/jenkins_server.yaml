@@ -2,5 +2,6 @@ jenkins_http_port: 9060
 jenkins_user: jenkins
 jenkins_group: jenkins
 jenkins_home: /opt/apps/jenkins
+jenkins_casc: /opt/apps/jenkins_casc
 jenkins_war_url: "https://get.jenkins.io/war-stable/2.516.1/jenkins.war"
 

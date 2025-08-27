@@ -1,0 +1,51 @@
+- name: Stop and disable Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    state: stopped
+    enabled: false
+
+# - name: Close Jenkins port in firewalld
+#   ansible.posix.firewalld:
+#     zone: public
+#     port: "{{ jenkins_http_port }}/tcp"
+#     state: disabled
+#     permanent: yes
+#     immediate: yes
+
+- name: Remove Jenkins service files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/systemd/system/jenkins.service
+
+- name: Reload systemd daemon after service file removal
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Remove Jenkins home and JCasC directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ jenkins_home }}"
+    - "{{ jenkins_casc }}"
+
+- name: Remove Jenkins user and group
+  ansible.builtin.user:
+    name: "{{ jenkins_user }}"
+    state: absent
+    remove: yes
+
+- name: Remove Jenkins group
+  ansible.builtin.group:
+    name: "{{ jenkins_group }}"
+    state: absent
+
+# - name: Remove required dependencies
+#   ansible.builtin.dnf:
+#     name:
+#       - fontconfig
+#       - java-21-openjdk-devel
+#       - git
+#     state: absent

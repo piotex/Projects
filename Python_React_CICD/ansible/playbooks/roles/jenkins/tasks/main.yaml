@@ -1,4 +1,7 @@
 ---
+- name: Delete Jenkins
+  import_tasks: delete_jenkins.yaml
+
 - name: Install Jenkins
   import_tasks: install_jenkins.yaml
 
