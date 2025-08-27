@@ -1,0 +1,48 @@
+
+- name: Load plugin list from file
+  ansible.builtin.set_fact:
+    jenkins_plugins: "{{ lookup('file', 'plugins.txt').splitlines() }}"
+
+- name: Read initial admin password
+  ansible.builtin.command: cat {{ jenkins_home }}/secrets/initialAdminPassword
+  register: initial_password_command_output
+
+# - name: Install Jenkins plugins from list
+#   community.general.jenkins_plugin:
+#     name: "{{ item }}"
+#     state: present
+#     url: "http://{{ansible_host }}:{{jenkins_http_port}}"
+#     url_username: admin 
+#     url_password: "{{ initial_password_command_output.stdout | trim }}" 
+#   loop: "{{ jenkins_plugins }}"
+
+- name: Copy JCasC configuration file to remote host
+  ansible.builtin.copy:
+    src: "jenkins.yaml"
+    dest: "{{ jenkins_home }}/jenkins.yaml"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: '0644'
+
+- name: Deploy manual jenkins.service file with JCasC 
+  ansible.builtin.template:
+    src: jenkins.service.jcasc.j2
+    dest: /etc/systemd/system/jenkins.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon after service file change
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable and start Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    state: restarted
+    enabled: yes
+  register: jenkins_service
+  until: jenkins_service is succeeded
+  retries: 3
+  delay: 15
+

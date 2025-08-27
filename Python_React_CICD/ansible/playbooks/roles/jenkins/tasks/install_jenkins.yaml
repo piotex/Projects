@@ -1,0 +1,74 @@
+- name: Install required dependencies (fontconfig, Java 21 OpenJDK)
+  ansible.builtin.dnf:
+    name:
+      - fontconfig
+      - java-21-openjdk-devel
+      - git
+    state: present
+
+- name: Create jenkins user and group 
+  ansible.builtin.group:
+    name: "{{ jenkins_group }}"
+    state: present
+
+- ansible.builtin.user:
+    name: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    system: yes
+    create_home: no
+    shell: /sbin/nologin
+
+- name: Create Jenkins home directory
+  ansible.builtin.file:
+    path: "{{ jenkins_home }}"
+    state: directory
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: '0755'
+
+- name: Deploy manual jenkins.service file
+  ansible.builtin.template:
+    src: jenkins.service.j2
+    dest: /etc/systemd/system/jenkins.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Download jenkins.war manually via get_url if not present or changed
+  ansible.builtin.get_url:
+    url: "{{ jenkins_war_url }}"
+    dest: "{{ jenkins_home }}/jenkins.war"
+    mode: '0644'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+    force: no
+
+- name: Reload systemd daemon after service file change
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable and start Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    state: started 
+    enabled: yes
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "{{jenkins_http_port}}/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Wait for Jenkins to be ready
+  ansible.builtin.uri:
+    url: "http://localhost:{{ jenkins_http_port }}/login"
+    status_code: 200
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 15
+  changed_when: false
+

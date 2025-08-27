@@ -1,0 +1,6 @@
+---
+- name: Install Jenkins
+  import_tasks: install_jenkins.yaml
+
+- name: Install Jenkins CasC
+  import_tasks: install_jenkins_casc.yaml

@@ -4,15 +4,17 @@
 ansible-project/
 ├── inventories/
 │   ├── dev/
-│   │   ├── hosts.yaml
+│   │   ├── hosts
 │   │   └── group_vars/
 │   │       ├── all.yaml
-│   │       └── frontend.yaml
-│   └── prod/
-│       ├── hosts.yaml
-│       └── group_vars/
-│           ├── all.yaml
-│           └── backend.yaml
+│   │       ├── frontend_server.yaml
+│   │       ├── backend_server.yaml
+│   │       └── jenkins_server.yaml
+│   └── # prod/
+│       # ├── hosts
+│       # └── group_vars/
+│       #     ├── all.yaml
+│       #     └── backend.yaml
 ├── roles/
 │   ├── common/        
 │   ├── frontend/      
@@ -20,10 +22,10 @@ ansible-project/
 │   └── jenkins/       
 ├── playbooks/
 │   ├── site.yaml      
-│   ├── frontend.yaml  
-│   ├── backend.yaml   
-│   └── jenkins.yaml   
-└── files/             
+│   ├── # frontend.yaml  
+│   ├── # backend.yaml   
+│   └── # jenkins.yaml   
+└── # files/             
 ```
 
 
