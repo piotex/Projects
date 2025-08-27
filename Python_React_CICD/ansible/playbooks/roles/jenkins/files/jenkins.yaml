@@ -1,24 +1,34 @@
 jenkins:
-  authorizationStrategy: unsecured
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "peter"
+          name: "peter"
+          password: "peter"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: true
+
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
   labelAtoms:
-    - name: "built-in"
+  - name: "built-in"
   markupFormatter: "plainText"
   mode: NORMAL
   nodeMonitors:
-    - "architecture"
-    - "clock"
-    - diskSpace:
-        freeSpaceThreshold: "1GiB"
-        freeSpaceWarningThreshold: "2GiB"
-    - "swapSpace"
-    - tmpSpace:
-        freeSpaceThreshold: "1GiB"
-        freeSpaceWarningThreshold: "2GiB"
-    - "responseTime"
+  - "architecture"
+  - "clock"
+  - diskSpace:
+      freeSpaceThreshold: "1GiB"
+      freeSpaceWarningThreshold: "2GiB"
+  - "swapSpace"
+  - tmpSpace:
+      freeSpaceThreshold: "1GiB"
+      freeSpaceWarningThreshold: "2GiB"
+  - "responseTime"
   numExecutors: 2
   primaryView:
     all:
@@ -28,34 +38,14 @@ jenkins:
   remotingSecurity:
     enabled: true
   scmCheckoutRetryCount: 0
-  securityRealm:
-    local:
-      allowsSignup: false
-      enableCaptcha: false
-      users:
-        - id: "admin"
-          name: "admin"
-          properties:
-            - "apiToken"
-            - "consoleUrlProvider"
-            - "viewsTabBar"
-            - myView:
-                viewsTabBar: "standard"
-            - "timezone"
-            - "experimentalFlags"
-            - theme:
-                theme: "noOp"
-            - "mailer"
-            - preferredProvider:
-                providerId: "default"
-  slaveAgentPort: 50000
+  slaveAgentPort: -1
   updateCenter:
     sites:
-      - id: "default"
-        url: "https://updates.jenkins.io/update-center.json"
+    - id: "default"
+      url: "https://updates.jenkins.io/update-center.json"
   views:
-    - all:
-        name: "all"
+  - all:
+      name: "all"
   viewsTabBar: "standard"
 globalCredentialsConfiguration:
   configuration:
@@ -87,13 +77,11 @@ security:
   globalJobDslSecurityConfiguration:
     useScriptSecurity: true
   scriptApproval:
-    approvedScriptHashes:
-      - "SHA512:596f8d642ddcb2c259a2a967265427120bb86a73a54352173539a0cdf4bab81420b9e0d2e2bd77c2e4f7205853fb113b32ca18e9e1cc252b7b1af7cf7c23edeb"
     forceSandbox: false
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:
-      - "jobBuildDiscarder"
+    - "jobBuildDiscarder"
   buildStepOperation:
     enabled: false
   email-ext:
@@ -107,7 +95,7 @@ unclassified:
       Check console output at $BUILD_URL to view the results.
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     defaultTriggerIds:
-      - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
+    - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
     maxAttachmentSize: -1
     maxAttachmentSizeMb: -1
     precedenceBulk: false
@@ -127,7 +115,7 @@ unclassified:
     hookUrl: "http://192.168.56.110:9060/github-webhook/"
   globalTimeOutConfiguration:
     operations:
-      - "abortOperation"
+    - "abortOperation"
     overwriteable: false
   injectionConfig:
     allowUntrusted: false
@@ -140,7 +128,6 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "adres jeszcze nie jest skonfigurowany <nobody@nowhere>"
-    url: "http://192.168.56.110:9060/"
   mailer:
     charset: "UTF-8"
     useSsl: false
@@ -162,11 +149,12 @@ unclassified:
 tool:
   git:
     installations:
-      - home: "git"
-        name: "Default"
+    - home: "git"
+      name: "Default"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
+
 
 jobs:
   - script: >

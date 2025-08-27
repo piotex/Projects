@@ -6,14 +6,15 @@ After=network.target
 User={{ jenkins_user }}
 Group={{ jenkins_group }}
 Environment="JENKINS_HOME={{ jenkins_home }}"
-Environment="JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config={{ jenkins_casc }}/jenkins.yaml"
 Environment="JENKINS_ARGS=--httpPort={{ jenkins_http_port }} --webroot={{ jenkins_home }}/war"
 
-ExecStart=/usr/bin/java $JAVA_OPTS \
-  -jar {{ jenkins_home }}/jenkins.war $JENKINS_ARGS \
-  -Dcasc.jenkins.config={{ jenkins_casc }}/jenkins.yaml
-
+ExecStart=/usr/bin/java $JAVA_OPTS -jar {{ jenkins_home }}/jenkins.war $JENKINS_ARGS
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
+
+
+
+
