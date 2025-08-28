@@ -1,0 +1,8 @@
+- name: Get Nexus service status
+  ansible.builtin.command: systemctl status nexus
+  register: nexus_status_output
+  changed_when: false
+
+- name: Display Nexus service status
+  ansible.builtin.debug:
+    msg: "{{ nexus_status_output.stdout_lines }}"

@@ -1,0 +1,9 @@
+nexus_version: "3.83.1-03"
+nexus_download_url: "https://download.sonatype.com/nexus/3/nexus-{{ nexus_version }}-linux-x86_64.tar.gz"
+nexus_install_dir: "/opt/apps/nexus"
+nexus_data_dir: "/opt/apps/nexus/sonatype-work/nexus3"
+nexus_user: "nexus"
+nexus_group: "nexus"
+nexus_port: 9050
+nexus_technical_user: "peter"
+nexus_technical_user_password: "peter"

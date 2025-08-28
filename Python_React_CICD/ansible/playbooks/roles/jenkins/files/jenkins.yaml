@@ -6,6 +6,9 @@ jenkins:
         - id: "peter"
           name: "peter"
           password: "peter"
+        - id: "admin"
+          name: "admin"
+          password: "admin"
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: true

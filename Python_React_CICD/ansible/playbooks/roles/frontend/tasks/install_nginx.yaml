@@ -1,8 +1,3 @@
-# - name: Uninstall Nginx (RedHat/CentOS/Fedora)
-#   ansible.builtin.dnf:
-#     name: nginx
-#     state: absent
-
 - name: Install Nginx (RedHat/CentOS/Fedora)
   ansible.builtin.dnf:
     name: nginx
@@ -50,16 +45,8 @@
 - name: Ensure Nginx service is running and enabled
   ansible.builtin.systemd:
     name: nginx
-    state: restarted
+    state: started
     enabled: yes
 
-- name: Get Nginx version
-  ansible.builtin.command: nginx -v
-  register: nginx_version_output
-  changed_when: false 
 
-- name: Display Nginx version
-  ansible.builtin.debug:
-    msg: "Nginx version installed: {{ nginx_version_output.stderr | regex_replace('^nginx version: ', '') }}"
-       
 

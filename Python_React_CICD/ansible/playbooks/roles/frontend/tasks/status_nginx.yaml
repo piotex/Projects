@@ -1,0 +1,8 @@
+- name: Get Nginx service status
+  ansible.builtin.command: systemctl status nginx
+  register: nginx_status_output
+  changed_when: false
+
+- name: Display Nginx service status
+  ansible.builtin.debug:
+    msg: "{{ nginx_status_output.stdout_lines }}"

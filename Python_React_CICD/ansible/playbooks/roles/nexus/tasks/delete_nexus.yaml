@@ -1,0 +1,44 @@
+- name: Stop and disable Nexus service
+  ansible.builtin.systemd:
+    name: nexus
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+
+- name: Remove Nexus systemd service file
+  ansible.builtin.file:
+    path: /etc/systemd/system/nexus.service
+    state: absent
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Close port in firewalld
+  ansible.posix.firewalld:
+    zone: public
+    port: "{{ nexus_port }}/tcp"
+    state: disabled
+    permanent: yes
+    immediate: yes
+
+- name: Remove Nexus installation directory
+  ansible.builtin.file:
+    path: "{{ nexus_install_dir }}"
+    state: absent
+
+- name: Remove Nexus data directory
+  ansible.builtin.file:
+    path: "{{ nexus_data_dir }}"
+    state: absent
+
+- name: Remove Nexus user
+  ansible.builtin.user:
+    name: "{{ nexus_user }}"
+    state: absent
+    remove: yes
+
+- name: Remove Nexus group
+  ansible.builtin.group:
+    name: "{{ nexus_group }}"
+    state: absent

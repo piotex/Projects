@@ -10,6 +10,7 @@ ansible-project/
 │   │       ├── frontend_server.yaml
 │   │       ├── backend_server.yaml
 │   │       └── jenkins_server.yaml
+│   │       └── nexus_server.yaml
 │   └── # prod/
 │       # ├── hosts
 │       # └── group_vars/
@@ -20,10 +21,11 @@ ansible-project/
 │   ├── frontend/      
 │   ├── backend/       
 │   └── jenkins/       
+│   └── nexus/       
 ├── playbooks/
 │   ├── site.yaml      
-│   ├── # frontend.yaml  
-│   ├── # backend.yaml   
+│   ├── deploy_frontend.yaml  
+│   ├── # deploy_backend.yaml   
 │   └── # jenkins.yaml   
 └── # files/             
 ```

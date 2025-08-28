@@ -1,0 +1,156 @@
+- name: Ensure nexus group exists
+  ansible.builtin.group:
+    name: "{{ nexus_group }}"
+    state: present
+
+- name: Ensure nexus user exists
+  ansible.builtin.user:
+    name: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    home: "{{ nexus_install_dir }}"
+    shell: /bin/bash
+    create_home: no
+    system: yes
+
+- name: Create installation directory
+  ansible.builtin.file:
+    path: "{{ nexus_install_dir }}"
+    state: directory
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: '0755'
+
+- name: Create Nexus data directory
+  ansible.builtin.file:
+    path: "{{ nexus_data_dir }}"
+    state: directory
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: '0755'
+    recurse: yes
+
+- name: Ensure Nexus etc directory exists
+  ansible.builtin.file:
+    path: "{{ nexus_data_dir }}/etc"
+    state: directory
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: '0755'
+
+- name: Download Nexus tar.gz
+  ansible.builtin.get_url:
+    url: "{{ nexus_download_url }}"
+    dest: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    mode: '0644'
+
+- name: Extract Nexus
+  ansible.builtin.unarchive:
+    src: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    dest: "{{ nexus_install_dir }}"
+    remote_src: yes
+    creates: "{{ nexus_install_dir }}/nexus-{{ nexus_version }}"
+
+- name: Set symlink to current Nexus version
+  ansible.builtin.file:
+    src: "{{ nexus_install_dir }}/nexus-{{ nexus_version }}"
+    dest: "{{ nexus_install_dir }}/nexus"
+    state: link
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+
+- name: Deploy nexus.properties from template
+  ansible.builtin.template:
+    src: nexus.properties.j2
+    dest: "{{ nexus_data_dir }}/etc/nexus.properties"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: '0644'
+
+# - name: Configure Nexus data dir
+#   ansible.builtin.lineinfile:
+#     path: "{{ nexus_install_dir }}/nexus/bin/nexus.rc"
+#     regexp: '^#?run_as_user='
+#     line: "run_as_user={{ nexus_user }}"
+#     create: yes
+#     owner: "{{ nexus_user }}"
+#     group: "{{ nexus_group }}"
+#     mode: '0644'
+
+# - name: Set Nexus data directory
+#   ansible.builtin.lineinfile:
+#     path: "{{ nexus_install_dir }}/nexus/bin/nexus.rc"
+#     regexp: '^#?NEXUS_DATA='
+#     line: "NEXUS_DATA={{ nexus_data_dir }}"
+#     insertafter: EOF
+#     owner: "{{ nexus_user }}"
+#     group: "{{ nexus_group }}"
+#     mode: '0644'
+
+- name: Recursively fix ownership and permissions of Nexus install directory
+  ansible.builtin.file:
+    path: "{{ nexus_install_dir }}"
+    state: directory
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: '0755'
+    recurse: yes
+
+- name: Configure Nexus service
+  ansible.builtin.template:
+    src: nexus.service.j2
+    dest: /etc/systemd/system/nexus.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Ensure Nexus is enabled and running
+  ansible.builtin.systemd:
+    name: nexus
+    state: started
+    enabled: yes
+
+- name: Open port with firewalld (RedHat/CentOS/Fedora)
+  ansible.posix.firewalld:
+    zone: public
+    port: "{{nexus_port}}/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Wait until admin.password is created
+  ansible.builtin.wait_for:
+    path: "{{ nexus_data_dir }}/admin.password"
+    state: present
+    timeout: 300   
+    sleep: 5      
+
+- name: Read admin password
+  ansible.builtin.slurp:
+    src: "{{ nexus_data_dir }}/admin.password"
+  register: admin_password_raw
+
+- name: Set admin password fact
+  ansible.builtin.set_fact:
+    admin_password: "{{ admin_password_raw.content | b64decode | trim }}"
+
+- name: Create Nexus user peter
+  ansible.builtin.uri:
+    url: "http://localhost:{{ nexus_port }}/service/rest/v1/security/users"
+    method: POST
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+    body_format: json
+    body:
+      userId: "{{nexus_technical_user}}"
+      firstName: "Peter"
+      lastName: "Admin"
+      emailAddress: "peter@example.com"
+      password: "{{nexus_technical_user_password}}"
+      status: "active"
+      roles: ["nx-admin"]

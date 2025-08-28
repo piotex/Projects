@@ -1,10 +1,16 @@
 ---
 - name: Install Nginx
   import_tasks: install_nginx.yaml
+  tags: [setup, frontend]
 
-# - name: Configure Nginx
-#   import_tasks: configure_nginx.yaml
+- name: Check Nginx status
+  import_tasks: status_nginx.yaml
+  tags: [status, frontend]
 
+- name: Deploy frontend application
+  import_tasks: deploy_react.yaml
+  tags: [deploy, frontend]
+  
 # - name: Deploy React app
 #   import_tasks: deploy_react.yaml
 

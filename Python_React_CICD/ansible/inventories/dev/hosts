@@ -7,3 +7,6 @@
 [jenkins_server]
 192.168.56.110
 
+[nexus_server]
+192.168.56.110
+

@@ -1,0 +1,9 @@
+---
+- name: Delete Nexus
+  import_tasks: delete_nexus.yaml
+
+- name: Install Nexus
+  import_tasks: install_nexus.yaml
+
+- name: Check Nexus service status
+  import_tasks: status_nexus.yaml
