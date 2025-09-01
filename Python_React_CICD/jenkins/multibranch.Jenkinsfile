@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/piotex/Projects.git'
         NEXUS_REPO = 'maven-snapshots'
-        GROUP_ID = "com.python_react_cicd"
+        GROUP_ID = "com/python_react_cicd"
         ARTIFACT_ID = "backend"
         VERSION = "1.0.0-SNAPSHOT"
         PACKAGING = "zip"
@@ -45,7 +45,7 @@ pipeline {
                             curl -v \
                             --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \
                             --upload-file "${ARTIFACT_ID}-${VERSION}.zip" \
-                            "http://192.168.56.110:9050/repository/${NEXUS_REPO}/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
+                            "http://192.168.56.110:9050/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.zip"
                         '''
                     }
                 }
