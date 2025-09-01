@@ -33,14 +33,14 @@ pipeline {
         stage('Build and Push to Nexus') {
             steps {
                 dir('Python_React_CICD/backend') {
-                    sh "zip -r ${TIMESTAMP}.zip . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
+                    sh "zip -r ${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}.zip . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
                     
                     withCredentials([usernamePassword(credentialsId: "nexus-credentials", passwordVariable: 'NEXUS_PASSWORD', usernameVariable: 'NEXUS_USER')]) {
                         sh '''
                             RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
                                 --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \
-                                --upload-file "${TIMESTAMP}.zip" \
-                                "http://192.168.56.110:9050/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${VERSION}/${TIMESTAMP}.zip")
+                                --upload-file "${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}.zip" \
+                                "http://192.168.56.110:9050/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}.zip")
                             
                             if [ "$RESPONSE" -eq 201 ]; then
                                 echo "Upload successful (HTTP 201 Created)"
