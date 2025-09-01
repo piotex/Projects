@@ -35,7 +35,7 @@ pipeline {
             steps {
                 dir('Python_React_CICD/backend') {
                     sh '. venv/bin/activate'
-                    // sh 'pytest'
+                    sh 'pytest'
                 }
             }
         }
