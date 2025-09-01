@@ -5,7 +5,8 @@ pipeline {
         REPO_URL = 'https://github.com/piotex/Projects.git'
         NEXUS_HOST = '192.168.56.110:9050'
         NEXUS_CREDENTIALS = 'nexus-credentials' 
-        NEXUS_REPO = 'maven-releases'
+        NEXUS_REPO = 'maven-snapshots'
+        // NEXUS_REPO = 'maven-releases'
         GROUP_ID = 'com/python_react_cicd'
         ARTIFACT_ID = 'backend'
         ARTIFACT_VERSION = "1.0.0-SNAPSHOT" 
