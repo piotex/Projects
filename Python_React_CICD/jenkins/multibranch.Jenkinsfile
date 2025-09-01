@@ -6,7 +6,7 @@ pipeline {
         NEXUS_REPO = 'maven-snapshots'
         GROUP_ID = "com/python_react_cicd"
         ARTIFACT_ID = "backend"
-        VERSION = "1.0.0-SNAPSHOT"
+        VERSION = "1.0.0"
         TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
     }
 
