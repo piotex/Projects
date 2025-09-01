@@ -9,7 +9,7 @@ pipeline {
         // NEXUS_REPO = 'maven-releases'
         GROUP_ID = 'com/python_react_cicd'
         ARTIFACT_ID = 'backend'
-        ARTIFACT_VERSION = "1.0.0-SNAPSHOT" 
+        ARTIFACT_VERSION = "1.0.0" 
         ARTIFACT_SUB_VERSION = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
     }
     stages {
