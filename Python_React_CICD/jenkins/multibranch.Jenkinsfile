@@ -24,9 +24,11 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('Python_React_CICD/backend') {
-                    sh 'python -m venv venv'
-                    sh '. venv/bin/activate'
-                    sh 'pip install -r requirements.txt'
+                    sh '''
+                        python -m venv venv
+                        . venv/bin/activate
+                        pip install -r requirements.txt
+                    '''
                 }
             }
         }
