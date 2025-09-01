@@ -21,23 +21,27 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        // stage('Install Dependencies') {
+        //     steps {
+        //         dir('Python_React_CICD/backend') {
+        //             sh '''
+        //                 python -m venv venv
+        //                 . venv/bin/activate
+        //                 pip install -r requirements.txt
+        //             '''
+        //         }
+        //     }
+        // }
+
+        stage('Run Tests') {
             steps {
                 dir('Python_React_CICD/backend') {
                     sh '''
                         python -m venv venv
                         . venv/bin/activate
                         pip install -r requirements.txt
+                        pytest
                     '''
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                dir('Python_React_CICD/backend') {
-                    sh '. venv/bin/activate'
-                    sh 'pytest'
                 }
             }
         }
