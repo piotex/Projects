@@ -9,9 +9,12 @@ pipeline {
         // NEXUS_REPO = 'maven-releases'
         GROUP_ID = 'com/python_react_cicd'
         ARTIFACT_ID = 'backend'
-        ARTIFACT_VERSION = "1.0.0" 
-        ARTIFACT_SUB_VERSION = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        
+        FULL_VERSION = "1.0.0-SNAPSHOT" 
+        TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        UNIQUE_VERSION = "${FULL_VERSION}-${TIMESTAMP}"
     }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -19,6 +22,7 @@ pipeline {
                 git branch: 'main', url: "${REPO_URL}"
             }
         }
+
         stage('Install Dependencies') {
             steps {
                 dir('Python_React_CICD/backend') {
@@ -27,6 +31,7 @@ pipeline {
                 }
             }
         }
+
         stage('Run Tests') {
             steps {
                 dir('Python_React_CICD/backend') {
@@ -34,23 +39,26 @@ pipeline {
                 }
             }
         }
+
         stage('Build and Push to Nexus') {
             steps {
                 dir('Python_React_CICD/backend') {
-                    sh "zip -r ${env.ARTIFACT_SUB_VERSION}.zip . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
+                    sh "zip -r ${env.ARTIFACT_ID}-${env.UNIQUE_VERSION}.zip . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
+                    
                     withCredentials([usernamePassword(credentialsId: "${NEXUS_CREDENTIALS}", passwordVariable: 'NEXUS_PASSWORD', usernameVariable: 'NEXUS_USER')]) {
                         echo "Przesyłanie artefaktu do Nexus..."
                         sh '''
                             curl -v \\
                             --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \\
-                            --upload-file "${ARTIFACT_SUB_VERSION}.zip" \\
-                            "http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${ARTIFACT_VERSION}/${ARTIFACT_SUB_VERSION}.zip"
+                            --upload-file "${ARTIFACT_ID}-${UNIQUE_VERSION}.zip" \\
+                            "http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${FULL_VERSION}/${ARTIFACT_ID}-${UNIQUE_VERSION}.zip"
                         '''
                     }
                 }
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline finished.'
