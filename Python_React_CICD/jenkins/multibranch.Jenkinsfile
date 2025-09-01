@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/piotex/Projects.git'
         NEXUS_HOST = '192.168.56.110:9050'
-        NEXUS_CREDENTIALS = 'nexus-credentials' 
+        NEXUS_CREDENTIALS = 'nexus-credentials'
         NEXUS_REPO = 'maven-snapshots'
         // NEXUS_REPO = 'maven-releases'
         GROUP_ID = 'com/python_react_cicd'
@@ -13,6 +13,8 @@ pipeline {
         FULL_VERSION = "1.0.0" 
         TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         UNIQUE_VERSION = "${TIMESTAMP}-SNAPSHOT"
+        
+        ARTIFACT_FILENAME = "${ARTIFACT_ID}-${UNIQUE_VERSION}.zip"
     }
 
     stages {
@@ -43,15 +45,15 @@ pipeline {
         stage('Build and Push to Nexus') {
             steps {
                 dir('Python_React_CICD/backend') {
-                    sh "zip -r ${env.UNIQUE_VERSION}.zip . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
+                    sh "zip -r ${env.ARTIFACT_FILENAME} . -x \"*.venv*\" -x \"*.pytest_cache*\" -x \"*__pycache__*\""
                     
                     withCredentials([usernamePassword(credentialsId: "${NEXUS_CREDENTIALS}", passwordVariable: 'NEXUS_PASSWORD', usernameVariable: 'NEXUS_USER')]) {
                         echo "Przesyłanie artefaktu do Nexus..."
                         sh '''
                             curl -v \\
                             --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \\
-                            --upload-file "${UNIQUE_VERSION}.zip" \\
-                            "http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${FULL_VERSION}/${UNIQUE_VERSION}.zip"
+                            --upload-file "${ARTIFACT_FILENAME}" \\
+                            "http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${FULL_VERSION}/${ARTIFACT_FILENAME}"
                         '''
                     }
                 }
