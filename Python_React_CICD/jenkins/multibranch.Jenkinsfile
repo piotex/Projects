@@ -49,7 +49,7 @@ pipeline {
         stage('Build and Push to Nexus') {
             steps {
                 dir('Python_React_CICD/backend') {
-                    sh "zip -r ${ARTIFACT_FILE} ."
+                    sh "zip -r ${ARTIFACT_FILE} . -x venv\\*"
                     withCredentials([usernamePassword(credentialsId: "${NEXUS_CREDENTIALS}", passwordVariable: 'NEXUS_PASSWORD', usernameVariable: 'NEXUS_USER')]) {
                         sh "curl -v --user \"${NEXUS_USER}:${NEXUS_PASSWORD}\" --upload-file ${ARTIFACT_FILE} http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_FILE}"
                     }
