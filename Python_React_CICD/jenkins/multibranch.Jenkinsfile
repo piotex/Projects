@@ -14,6 +14,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                cleanWs()
                 git branch: 'main', url: "${REPO_URL}"
             }
         }
@@ -52,6 +53,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
+            cleanWs()
         }
         success {
             echo 'Pipeline completed successfully!'
