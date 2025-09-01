@@ -40,9 +40,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: "${NEXUS_CREDENTIALS}", passwordVariable: 'NEXUS_PASSWORD', usernameVariable: 'NEXUS_USER')]) {
                         echo "Przesyłanie artefaktu do Nexus..."
                         sh '''
-                            curl -v \
-                            --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \
-                            --upload-file "${SUB_VERSION}.zip" \
+                            curl -v \\
+                            --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \\
+                            --upload-file "${ARTIFACT_SUB_VERSION}.zip" \\
                             "http://${NEXUS_HOST}/repository/${NEXUS_REPO}/${GROUP_ID}/${ARTIFACT_ID}/${ARTIFACT_VERSION}/${ARTIFACT_SUB_VERSION}.zip"
                         '''
                     }
