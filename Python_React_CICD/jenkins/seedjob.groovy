@@ -14,7 +14,7 @@ multibranchPipelineJob('multibranch-pipeline') {
     }
     factory {
         workflowBranchProjectFactory {
-            scriptPath('Python_React_CICD/jenkins/example.Jenkinsfile')
+            scriptPath('Python_React_CICD/jenkins/multibranch.Jenkinsfile')
         }
     }
     orphanedItemStrategy {

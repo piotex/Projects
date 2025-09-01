@@ -1,3 +1,15 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          description: "nexus-credentials"
+          id: "nexus-credentials"
+          password: "xxxxxxxxxxx"
+          scope: GLOBAL
+          username: "peter"
+          usernameSecret: true
+
 jenkins:
   securityRealm:
     local:
