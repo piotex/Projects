@@ -45,8 +45,8 @@ pipeline {
                         sh '''
                             curl -v \\
                             --user "${NEXUS_USER}:${NEXUS_PASSWORD}" \\
-                            --upload-file "${ARTIFACT_FILENAME}" \\
-                            "http://192.168.56.110:9050/repository/${NEXUS_REPO}/com/python_react_cicd/${ARTIFACT_ID}/${ARTIFACT_FILENAME}-${FULL_VERSION}"
+                            --upload-file "${ARTIFACT_ID}-${FULL_VERSION}" \\
+                            "http://192.168.56.110:9050/repository/${NEXUS_REPO}/com/python_react_cicd/${ARTIFACT_ID}/${ARTIFACT_ID}-${FULL_VERSION}"
                         '''
                     }
                 }
