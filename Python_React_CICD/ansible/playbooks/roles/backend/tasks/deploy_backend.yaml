@@ -1,0 +1,105 @@
+---
+# - name: Build artifact URL
+#   ansible.builtin.set_fact:
+#     artifact_full_url: "http://192.168.56.110:9050/repository/maven-snapshots/com/python_react_cicd/backend/1.0.0-SNAPSHOT/"
+
+- name: Construct the full URL for Nexus API
+  ansible.builtin.set_fact:
+    full_nexus_url: >-
+      {{ nexus_search_api_url }}?repository={{ repository }}&maven.groupId={{ group_id }}&maven.artifactId={{ artifact_id }}&maven.baseVersion={{ base_version }}
+
+- name: Fetch all artifacts from the Nexus repository via API
+  ansible.builtin.uri:
+    url: "{{ full_nexus_url }}"
+    user: "peter"
+    password: "peter"
+    force_basic_auth: true
+    return_content: true
+    validate_certs: false
+  register: nexus_response
+
+- name: Find the latest zip artifact based on lastModified time
+  ansible.builtin.set_fact:
+    filtered_items: "{{ nexus_response.content | from_json | default({}) | json_query('items') | default([]) | selectattr('contentType', 'equalto', 'application/zip') }}"
+
+- name: Set latest_zip_url if artifacts are found
+  ansible.builtin.set_fact:
+    latest_zip_url: "{{ (filtered_items | sort(attribute='lastModified', reverse=true) | first).downloadUrl }}"
+  when: filtered_items | length > 0         
+
+- name: Download the latest zip file
+  ansible.builtin.get_url:
+    url: "{{ latest_zip_url }}"
+    user: "{{ nexus_user }}"
+    password: "{{ nexus_password }}"
+    force_basic_auth: true
+    dest: "/tmp/backend-latest.zip"
+    mode: '0644'
+  when: latest_zip_url is defined and latest_zip_url is not none
+
+- name: Display the fetched content for debugging
+  ansible.builtin.debug:
+    var: latest_zip_url
+
+
+
+# - name: Find the latest zip artifact
+#   ansible.builtin.set_fact:
+#     latest_zip_file: >-
+#       {{ nexus_response.content | from_json | json_query("items[*].path") |
+#           select("match", "\\.zip$") | sort | last }}
+  
+# - name: Download the latest zip file
+#   ansible.builtin.get_url:
+#     url: "{{ nexus_url }}{{ latest_zip_file }}"
+#     dest: "/tmp/{{ latest_zip_file }}"
+#     mode: '0644'
+#   when: latest_zip_file is defined and latest_zip_file is not none
+
+
+
+# - name: Download application ZIP from Nexus
+#   ansible.builtin.get_url:
+#     url: "{{ artifact_full_url }}"
+#     dest: "/tmp/{{ artifact_id }}.zip"
+#     url_username: "{{ nexus_user }}"  
+#     url_password: "{{ nexus_password }}" 
+#     mode: '0644'
+
+# - name: Stop backend service before deployment
+#   ansible.builtin.systemd:
+#     name: "{{ backend_service }}"
+#     state: stopped
+
+# - name: Remove old application directory
+#   ansible.builtin.file:
+#     path: "{{ backend_path }}"
+#     state: absent
+
+# - name: Create new application directory
+#   ansible.builtin.file:
+#     path: "{{ backend_path }}"
+#     state: directory
+#     owner: "{{ backend_user }}"
+#     group: "{{ backend_user }}"
+#     mode: '0755'
+
+# - name: Unarchive the downloaded file
+#   ansible.builtin.unarchive:
+#     src: "/tmp/{{ artifact_id }}.zip"
+#     dest: "{{ backend_path }}"
+#     remote_src: yes
+#     owner: "{{ backend_user }}"
+#     group: "{{ backend_user }}"
+#     mode: '0755'
+
+# - name: Start and enable backend service
+#   ansible.builtin.systemd:
+#     name: "{{ backend_service }}"
+#     state: started
+#     enabled: yes
+
+# - name: Remove downloaded ZIP archive
+#   ansible.builtin.file:
+#     path: "/tmp/{{ artifact_id }}.zip"
+#     state: absent

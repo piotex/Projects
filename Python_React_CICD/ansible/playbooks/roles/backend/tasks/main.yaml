@@ -1,4 +1,9 @@
 ---
 - name: Install backend
   import_tasks: install_backend.yaml
+  tags: [setup]
+
+- name: Deploy backend
+  import_tasks: deploy_backend.yaml
+  tags: [deploy]
 

@@ -1,7 +1,18 @@
 backend_port: 9080
 backend_user: "backend"
+backend_service: "backend"
 backend_path: "/opt/apps/backend"
 backend_venv_path: "{{ backend_path }}/venv"
 gunicorn_bind: "0.0.0.0:{{ backend_port }}"
 gunicorn_workers: 3
 gunicorn_app_file: "app.py"
+
+nexus_search_api_url: "http://192.168.56.110:9050/service/rest/v1/search/assets"
+repository: "maven-snapshots"
+group_id: "com.python_react_cicd"
+artifact_id: "backend"
+base_version: "1.0.0-SNAPSHOT"
+artifact_timestamp: "{{ lookup('env', 'TIMESTAMP') | default('20240325123456') }}"
+
+nexus_user: "peter"
+nexus_password: "peter"

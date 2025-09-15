@@ -1,0 +1,8 @@
+---
+- name: Deploy backend
+  hosts: backend_server
+  become: true
+  gather_facts: false
+  roles:
+    - backend
+  tags: [backend, deploy]
