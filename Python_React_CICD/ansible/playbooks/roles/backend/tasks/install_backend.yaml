@@ -79,3 +79,7 @@
     state: enabled
     permanent: yes
     immediate: yes
+
+- name: Setup finished
+  ansible.builtin.debug:
+    msg: "Backend setup completed successfully."

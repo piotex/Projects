@@ -1,24 +1,19 @@
 ---
-# - name: Configure and deploy frontend
-#   hosts: frontend_server
-#   become: true
-#   gather_facts: false
-#   roles:
-#     - frontend
+- name: Configure and deploy frontend
+  hosts: frontend_server
+  become: true
+  gather_facts: false
+  roles:
+    - frontend
+  tags: [frontend, setup]
 
-# - name: Configure and deploy backend
-#   hosts: backend_server
-#   become: true
-#   gather_facts: false
-#   roles:
-#     - backend
-
-# - name: Configure and deploy jenkins
-#   hosts: jenkins_server
-#   become: true
-#   gather_facts: false
-#   roles:
-#     - jenkins
+- name: Configure and deploy backend
+  hosts: backend_server
+  become: true
+  gather_facts: false
+  roles:
+    - backend
+  tags: [backend, setup]
 
 - name: Configure and deploy nexus
   hosts: nexus_server
@@ -27,3 +22,11 @@
   roles:
     - nexus
   tags: [nexus, setup]
+
+- name: Configure and deploy jenkins
+  hosts: jenkins_server
+  become: true
+  gather_facts: false
+  roles:
+    - jenkins
+  tags: [jenkins, setup]

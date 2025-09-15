@@ -1,4 +1,4 @@
-
+---
 - name: Load plugin list from file
   ansible.builtin.set_fact:
     jenkins_plugins: "{{ lookup('file', 'plugins.txt').splitlines() }}"

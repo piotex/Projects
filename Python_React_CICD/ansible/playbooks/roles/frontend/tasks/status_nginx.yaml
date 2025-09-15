@@ -1,3 +1,4 @@
+---
 - name: Get Nginx service status
   ansible.builtin.command: systemctl status nginx
   register: nginx_status_output

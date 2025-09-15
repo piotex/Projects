@@ -1,9 +1,8 @@
 ---
-- name: Delete Jenkins
-  import_tasks: delete_jenkins.yaml
-
-- name: Install Jenkins
-  import_tasks: install_jenkins.yaml
-
-- name: Install Jenkins CasC
-  import_tasks: install_jenkins_casc.yaml
+- block:
+  - import_tasks: delete_jenkins.yaml
+  - import_tasks: install_jenkins.yaml
+  - import_tasks: install_jenkins_casc.yaml
+  when:
+    - "'setup' in ansible_run_tags"
+    - "'jenkins' in ansible_run_tags"

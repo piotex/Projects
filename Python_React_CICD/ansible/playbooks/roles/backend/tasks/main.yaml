@@ -1,9 +1,12 @@
 ---
 - name: Install backend
-  import_tasks: install_backend.yaml
-  tags: [setup]
+  include_tasks: install_backend.yaml
+  when:
+    - "'setup' in ansible_run_tags"
+    - "'backend' in ansible_run_tags"
 
 - name: Deploy backend
-  import_tasks: deploy_backend.yaml
-  tags: [deploy]
-
+  include_tasks: deploy_backend.yaml
+  when:
+    - "'deploy' in ansible_run_tags"
+    - "'backend' in ansible_run_tags"

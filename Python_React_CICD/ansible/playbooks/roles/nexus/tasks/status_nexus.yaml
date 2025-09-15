@@ -1,3 +1,4 @@
+---
 - name: Get Nexus service status
   ansible.builtin.command: systemctl status nexus
   register: nexus_status_output

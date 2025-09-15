@@ -91,3 +91,4 @@ dark-theme
 configuration-as-code
 job-dsl
 workflow-multibranch
+pipeline-stage-view

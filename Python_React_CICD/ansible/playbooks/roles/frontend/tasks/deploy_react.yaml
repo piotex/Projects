@@ -1,0 +1,30 @@
+---
+# - name: Clone React app repository
+#   ansible.builtin.git:
+#     repo: "{{ react_repo_url }}"
+#     dest: "{{ react_app_src_dir }}"
+#     version: "{{ react_repo_version | default('main') }}"
+#     update: yes
+
+# - name: Install React app dependencies
+#   ansible.builtin.command: npm install
+#   args:
+#     chdir: "{{ react_app_src_dir }}"
+
+# - name: Build React app
+#   ansible.builtin.command: npm run build
+#   args:
+#     chdir: "{{ react_app_src_dir }}"
+
+# - name: Copy React build to Nginx root
+#   ansible.builtin.copy:
+#     src: "{{ react_app_src_dir }}/build/"
+#     dest: "{{ frontend_app_directory }}/"
+#     owner: nginx
+#     group: nginx
+#     mode: '0755'
+#   notify: Restart nginx
+
+- name: Deployment finished
+  ansible.builtin.debug:
+    msg: "Frontend deployment completed successfully."

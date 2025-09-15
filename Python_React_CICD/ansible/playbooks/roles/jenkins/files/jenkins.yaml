@@ -21,6 +21,9 @@ jenkins:
         - id: "admin"
           name: "admin"
           password: "admin"
+        - id: "jenkins"
+          name: "jenkins"
+          password: "jenkins"
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: true

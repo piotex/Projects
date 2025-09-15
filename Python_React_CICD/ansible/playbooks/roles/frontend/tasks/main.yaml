@@ -1,18 +1,16 @@
 ---
-- name: Install Nginx
-  import_tasks: install_nginx.yaml
-  tags: [setup, frontend]
+- block:
+  - include_tasks: install_nginx.yaml
+  - import_tasks: status_nginx.yaml
+  when:
+    - "'setup' in ansible_run_tags"
+    - "'frontend' in ansible_run_tags"
 
-- name: Check Nginx status
-  import_tasks: status_nginx.yaml
-  tags: [status, frontend]
+- block:
+  - include_tasks: deploy_react.yaml
+  - import_tasks: status_nginx.yaml
+  when:
+    - "'deploy' in ansible_run_tags"
+    - "'frontend' in ansible_run_tags"
 
-- name: Deploy frontend application
-  import_tasks: deploy_react.yaml
-  tags: [deploy, frontend]
-  
-# - name: Deploy React app
-#   import_tasks: deploy_react.yaml
 
-# - name: Copy frontend source code
-#   import_tasks: copy_code.yaml

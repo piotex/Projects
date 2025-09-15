@@ -1,3 +1,4 @@
+---
 - name: Stop and disable Jenkins service
   ansible.builtin.service:
     name: jenkins

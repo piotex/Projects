@@ -1,3 +1,4 @@
+---
 - name: Install required dependencies (fontconfig, Java 21 OpenJDK)
   ansible.builtin.dnf:
     name:

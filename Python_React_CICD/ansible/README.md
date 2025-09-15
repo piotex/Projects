@@ -32,12 +32,24 @@ ansible-project/
 
 
 
-# Run ansible
+# Ansible setup
 ```bash
 cd 
 source ansible-venv/bin/activate
 cd /home/peter/github/Projects/Python_React_CICD/ansible
-ansible-playbook -i inventories/dev/hosts playbooks/site.yaml
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags setup,jenkins
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags setup,nexus
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags setup,frontend
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags setup,backend
+```
+
+# Ansible deploy
+```bash
+cd 
+source ansible-venv/bin/activate
+cd /home/peter/github/Projects/Python_React_CICD/ansible
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags deploy,backend
+ansible-playbook -i inventories/dev/hosts playbooks/deploy.yaml --tags deploy,frontend
 ```
 
 

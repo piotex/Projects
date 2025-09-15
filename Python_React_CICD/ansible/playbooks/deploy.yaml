@@ -4,5 +4,13 @@
   become: true
   gather_facts: false
   roles:
-    - backend
+    - role: backend
   tags: [backend, deploy]
+
+- name: Deploy frontend
+  hosts: frontend_server
+  become: true
+  gather_facts: false
+  roles:
+    - role: frontend
+  tags: [frontend, deploy]
