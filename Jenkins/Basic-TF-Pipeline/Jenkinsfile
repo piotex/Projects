@@ -1,0 +1,45 @@
+pipeline {
+    agent { label 'terraform-node' } 
+
+    environment {
+        AWS_REGION = 'eu-central-1'
+    }
+
+    stages {
+        stage('Validate') {
+            steps {
+                sh '''
+                  terraform --version
+                  terraform init -input=false
+                  terraform validate
+                '''
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                sh '''
+                  terraform plan -out=plan.tfplan
+                '''
+            }
+        }
+
+        stage('Apply') {
+            when {
+                branch 'main'
+            }
+            options {
+                timeout(time: 15, unit: 'MINUTES')
+            }
+            steps {
+                input message: 'Apply?', ok: 'Apply'
+                sh 'terraform apply -auto-approve plan.tfplan'
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs() 
+        }
+    }
+}
