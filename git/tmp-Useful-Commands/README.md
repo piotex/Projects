@@ -1,6 +1,12 @@
 # git 
 ## Useful Commands
 
+#### Set user and mail
+```
+git config user.name "piotex"
+git config user.email "pkubon2@gmail.com"
+```
+
 #### Change commit author
 ```
 git commit --amend --author="piotex <pkubon2@gmail.com>"
