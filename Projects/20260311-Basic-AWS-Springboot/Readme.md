@@ -66,7 +66,7 @@ java -version
 ### Deploy manually 
 ```
 ARTEFACT_PATH="github/Projects/Projects/20260311-Basic-AWS-Jenkins-Springboot/app-code/target/app-code-0.0.1-SNAPSHOT.jar"
-scp -i 2026-03-11.pem $ARTEFACT_PATH ec2-user@35.157.110.152:/home/ec2-user/
+scp -i 2026-03-11.pem $ARTEFACT_PATH ec2-user@X.X.X.X:/home/ec2-user/
 ssh -i PRIV_KEY ec2-user@PUBLIC_IP
 sudo java -jar app-code-0.0.1-SNAPSHOT.jar --server.port=80
 ```
