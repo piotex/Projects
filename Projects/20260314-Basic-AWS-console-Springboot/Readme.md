@@ -110,13 +110,6 @@ aws ec2 authorize-security-group-ingress \
 
 1.1.3 EC2
 ```
-aws ec2 describe-images \
-    --owners amazon \
-    --filters "Name=name,Values=Amazon Linux*" \
-    --region eu-central-1 \
-    --query 'sort_by(Images, &CreationDate)[-1].ImageId' \
-    --output text 
-
 aws ssm get-parameters-by-path \
     --path "/aws/service/ami-amazon-linux-latest" \
     --region eu-central-1 \
@@ -197,5 +190,4 @@ aws ec2 describe-key-pairs \
 KP_NAME=kp-2026-03-14
 aws ec2 delete-key-pair --key-name $KP_NAME
 ```
-
 

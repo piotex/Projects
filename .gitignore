@@ -212,3 +212,4 @@ tfplan
 LICENSE.txt
 
 .idea/
+*.pem
