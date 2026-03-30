@@ -13,6 +13,6 @@ public class HelloServlet extends HttpServlet {
             throws ServletException, IOException {
 
         resp.setContentType("text/plain");
-        resp.getWriter().println("Hello from Maven + Tomcat!");
+        resp.getWriter().println("Hello from Tomcat! 2026-03-31 00:29");
     }
 }
