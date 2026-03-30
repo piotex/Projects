@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/piotex/Projects.git'   
+        BRANCH = 'main'
+        PROJECT_PATH = 'Projects/20260316-AWS-Spring-Jenkins/app-code'
+    }
+
+    tools {
+        maven 'mvn-3.9.14' 
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "${BRANCH}"]],
+                    extensions: [
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: "${PROJECT_PATH}"]]],
+                    ],
+                    userRemoteConfigs: [[
+                        url: "${REPO_URL}"
+                    ]]
+                ])
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir("${PROJECT_PATH}") {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+    }
+}
