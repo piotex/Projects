@@ -1,0 +1,21 @@
+---
+- name: Configure application host
+  hosts: app
+  become: true
+
+  pre_tasks:
+    - name: Fail if no tags were provided
+      fail:
+        msg: >
+          At least one tag must be specified.
+          Allowed tags: docker, app
+      when: ansible_run_tags == ["all"]
+
+  roles:
+    - role: docker
+      tags:
+        - docker
+
+    - role: app
+      tags:
+        - app

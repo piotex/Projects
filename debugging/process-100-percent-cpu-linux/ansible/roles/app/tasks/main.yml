@@ -1,0 +1,23 @@
+- name: Create app directory
+  file:
+    path: /opt/cpu-app
+    state: directory
+
+- name: Copy application files
+  copy:
+    src: ../../../app/
+    dest: /opt/cpu-app/
+
+- name: Build image
+  command:
+    cmd: docker build -t cpu-app .
+    chdir: /opt/cpu-app
+
+- name: Remove existing container
+  ignore_errors: true
+  command:
+    cmd: docker rm -f cpu-app
+
+- name: Start container
+  command:
+    cmd: docker run -d --name cpu-app -p 5000:5000 cpu-app

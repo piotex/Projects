@@ -1,0 +1,188 @@
+Dla takiego repo zrobiłbym strukturę maksymalnie zbliżoną do obszarów z ogłoszenia. Dzięki temu po kilku tygodniach będziesz miał własny "DevOps Interview Lab".
+
+```text
+Projects/
+│
+├── README.md
+│
+├── linux/
+│   ├── process-100-percent-cpu/
+│   ├── high-load-average/
+│   ├── disk-full/
+│   ├── memory-investigation/
+│   ├── port-8080-debugging/
+│   ├── dns-troubleshooting/
+│   ├── network-connectivity/
+│   ├── log-analysis/
+│   ├── service-not-responding/
+│   └── file-system-investigation/
+│
+├── bash/
+│   ├── count-http-500/
+│   ├── top-10-ips/
+│   ├── endpoint-health-check/
+│   ├── log-rotation/
+│   ├── archive-logs/
+│   ├── find-large-files/
+│   ├── cpu-monitor/
+│   └── backup-script/
+│
+├── debugging/
+│   ├── application-returns-500/
+│   ├── memory-leak/
+│   ├── slow-application/
+│   ├── deployment-caused-errors/
+│   ├── database-vs-application/
+│   ├── timeout-investigation/
+│   ├── thread-deadlock/
+│   └── connection-pool-exhausted/
+│
+├── docker/
+│   ├── container-restart-loop/
+│   ├── image-size-optimization/
+│   ├── container-cannot-start/
+│   ├── environment-variables/
+│   ├── multi-stage-build/
+│   ├── health-checks/
+│   └── docker-networking/
+│
+├── cicd/
+│   ├── jenkins-pipeline/
+│   ├── pipeline-failure-analysis/
+│   ├── rollback-strategy/
+│   ├── artifact-management/
+│   ├── secret-management/
+│   ├── build-optimization/
+│   ├── release-process/
+│   └── blue-green-deployment/
+│
+├── aws/
+│   ├── ecs/
+│   │   ├── task-not-starting/
+│   │   ├── service-scaling/
+│   │   ├── ecs-to-rds/
+│   │   ├── ecs-logging/
+│   │   ├── deployment-strategy/
+│   │   └── task-definition-debugging/
+│   │
+│   ├── networking/
+│   │   ├── security-groups/
+│   │   ├── nacl-vs-sg/
+│   │   ├── public-vs-private-subnets/
+│   │   ├── route-tables/
+│   │   └── vpc-troubleshooting/
+│   │
+│   ├── load-balancers/
+│   │   ├── alb-502/
+│   │   ├── health-check-failure/
+│   │   └── zero-downtime-deployment/
+│   │
+│   ├── iam/
+│   │   ├── role-assumption/
+│   │   ├── least-privilege/
+│   │   └── ecs-access-secrets-manager/
+│   │
+│   └── monitoring/
+│       ├── cloudwatch-logs/
+│       ├── cloudwatch-metrics/
+│       └── alarms/
+│
+├── terraform/
+│   ├── remote-state/
+│   ├── state-locking/
+│   ├── import-existing-resource/
+│   ├── drift-detection/
+│   ├── modules/
+│   ├── ecs-infrastructure/
+│   └── networking/
+│
+├── coding/
+│   ├── arrays/
+│   │   ├── find-duplicates/
+│   │   ├── two-sum/
+│   │   ├── max-subarray/
+│   │   └── merge-intervals/
+│   │
+│   ├── strings/
+│   │   ├── reverse-string/
+│   │   ├── most-frequent-character/
+│   │   ├── palindrome/
+│   │   └── anagram/
+│   │
+│   ├── stacks/
+│   │   ├── valid-parentheses/
+│   │   └── browser-history/
+│   │
+│   ├── hashmaps/
+│   │   ├── frequency-counter/
+│   │   └── log-counter/
+│   │
+│   └── scenarios/
+│       ├── log-processing/
+│       ├── request-aggregation/
+│       └── metrics-calculation/
+│
+└── interview-notes/
+    ├── linux-cheatsheet.md
+    ├── aws-cheatsheet.md
+    ├── terraform-cheatsheet.md
+    ├── ecs-cheatsheet.md
+    ├── debugging-checklist.md
+    └── common-interview-questions.md
+```
+
+Ja dodatkowo w **każdym zadaniu** trzymałbym identyczny układ:
+
+```text
+process-100-percent-cpu/
+│
+├── README.md
+├── solution.md
+├── notes.md
+├── commands.sh
+└── assets/
+```
+
+Przykład:
+
+```text
+debugging/
+└── process-100-percent-cpu/
+    ├── README.md
+    ├── solution.md
+    ├── commands.sh
+    └── assets/
+```
+
+Gdzie:
+
+**README.md**
+
+```md
+# Problem
+
+Proces Java zużywa 100% CPU.
+
+## Zadanie
+
+Znajdź przyczynę.
+```
+
+**solution.md**
+
+```md
+1. top -H -p PID
+2. ps -Lp PID
+3. jstack PID
+4. analiza stack trace
+```
+
+**commands.sh**
+
+```bash
+top -H -p 1234
+ps -Lp 1234
+jstack 1234
+```
+
+Po 2-3 tygodniach będziesz miał repo wyglądające jak portfolio praktycznych zadań DevOps/Linux/AWS, a nie zbiór przypadkowych notatek. To bardzo pomaga przed ostatnią rundą rozmów.
