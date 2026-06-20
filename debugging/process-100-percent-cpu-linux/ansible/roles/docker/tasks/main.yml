@@ -1,6 +1,9 @@
-- name: Install Docker
+- name: Install Docker and required packages
   dnf:
-    name: docker
+    name:
+      - docker
+      - python3-docker
+      - awscli
     state: present
 
 - name: Enable Docker

@@ -1,23 +1,50 @@
-- name: Create app directory
-  file:
-    path: /opt/cpu-app
-    state: directory
+- name: Update system packages
+  yum:
+    name: '*'
+    state: latest
 
-- name: Copy application files
-  copy:
-    src: ../../../app/
-    dest: /opt/cpu-app/
-
-- name: Build image
-  command:
-    cmd: docker build -t cpu-app .
-    chdir: /opt/cpu-app
+- name: Get ECR login token
+  shell: |
+    aws ecr get-login-password --region {{ ecr_region }} | \
+    docker login --username AWS --password-stdin {{ ecr_repository_url }}
+  environment:
+    AWS_DEFAULT_REGION: "{{ ecr_region }}"
+  register: ecr_login
+  changed_when: false
+  ignore_errors: true
 
 - name: Remove existing container
   ignore_errors: true
-  command:
-    cmd: docker rm -f cpu-app
+  docker_container:
+    name: cpu-app
+    state: absent
 
-- name: Start container
-  command:
-    cmd: docker run -d --name cpu-app -p 5000:5000 cpu-app
+- name: Remove existing image
+  ignore_errors: true
+  docker_image:
+    name: "{{ ecr_repository_url }}/cpu-app:latest"
+    state: absent
+
+- name: Pull application image from ECR
+  docker_image:
+    name: "{{ ecr_repository_url }}/cpu-app:latest"
+    source: pull
+  register: pulled_image
+
+- name: Start container from ECR image
+  docker_container:
+    name: cpu-app
+    image: "{{ ecr_repository_url }}/cpu-app:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "5000:5000"
+  register: container_started
+
+- name: Verify container is running
+  docker_container_info:
+    name: cpu-app
+  register: container_info
+  until: container_info.exists and container_info.container.State.Running
+  retries: 5
+  delay: 2
