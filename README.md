@@ -1,6 +1,4 @@
 # Projects
-KubonTech Projects
-
 
 ## Actually best project:
 debugging/process-100-percent-cpu-linux
