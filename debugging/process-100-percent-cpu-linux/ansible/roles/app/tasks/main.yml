@@ -22,19 +22,19 @@
 - name: Remove existing image
   ignore_errors: true
   docker_image:
-    name: "{{ ecr_repository_url }}/cpu-app:latest"
+    name: "{{ ecr_repository_url }}:latest"
     state: absent
 
 - name: Pull application image from ECR
   docker_image:
-    name: "{{ ecr_repository_url }}/cpu-app:latest"
+    name: "{{ ecr_repository_url }}:latest"
     source: pull
   register: pulled_image
 
 - name: Start container from ECR image
   docker_container:
     name: cpu-app
-    image: "{{ ecr_repository_url }}/cpu-app:latest"
+    image: "{{ ecr_repository_url }}:latest"
     state: started
     restart_policy: always
     ports:

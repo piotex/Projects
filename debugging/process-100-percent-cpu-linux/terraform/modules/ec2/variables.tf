@@ -2,11 +2,20 @@ variable "environment" {
   type = string
 }
 
+
+
+variable "vpc_id" {
+  type = string
+}
+
 variable "subnet_id" {
   type = string
 }
 
-variable "security_group_id" {
+
+
+
+variable "allowed_ssh_cidr" {
   type = string
 }
 
@@ -15,10 +24,6 @@ variable "instance_type" {
 }
 
 variable "key_name" {
-  type = string
-}
-
-variable "iam_instance_profile" {
   type = string
 }
 

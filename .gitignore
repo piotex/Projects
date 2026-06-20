@@ -213,3 +213,5 @@ LICENSE.txt
 
 .idea/
 *.pem
+
+.docker

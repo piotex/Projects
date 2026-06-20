@@ -6,14 +6,6 @@ module "networking" {
   public_subnet_cidr = var.public_subnet_cidr
 }
 
-module "security_group" {
-  source = "./modules/security_group"
-
-  environment      = var.environment
-  vpc_id           = module.networking.vpc_id
-  allowed_ssh_cidr = var.allowed_ssh_cidr
-}
-
 module "ecr" {
   source = "./modules/ecr"
 
@@ -21,19 +13,13 @@ module "ecr" {
   project_name = var.project_name
 }
 
-module "iam" {
-  source = "./modules/iam"
-
-  environment = var.environment
-}
-
 module "ec2" {
   source = "./modules/ec2"
 
   environment            = var.environment
+  vpc_id                 = module.networking.vpc_id
   subnet_id              = module.networking.public_subnet_id
-  security_group_id      = module.security_group.id
-  iam_instance_profile   = module.iam.instance_profile_name
+  allowed_ssh_cidr       = var.allowed_ssh_cidr
 
   instance_type         = var.instance_type
   key_name              = var.key_name
