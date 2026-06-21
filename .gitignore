@@ -215,3 +215,5 @@ LICENSE.txt
 *.pem
 
 .docker
+
+repository_dump.txt
