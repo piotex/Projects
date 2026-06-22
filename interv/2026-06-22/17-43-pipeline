@@ -1,0 +1,23 @@
+Masz aplikację w Pythonie uruchamianą w Dockerze.
+
+Aktualny flow:
+
+developer robi push do repo,
+uruchamiają się testy,
+budowany jest obraz,
+wdrożenie na AWS.
+
+Zaprojektuj pipeline.
+
+Powiedz:
+
+Jakie usługi użyjesz?
+Jak przechowasz artefakty?
+Jak zrobisz rollback?
+Jak ograniczysz downtime?
+Jak zabezpieczysz sekrety?
+
+
+
+
+docker run -itd -p 8080:8080 jenkins/jenkins

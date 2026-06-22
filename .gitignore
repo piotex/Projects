@@ -217,3 +217,5 @@ LICENSE.txt
 .docker
 
 repository_dump.txt
+
+.less*
