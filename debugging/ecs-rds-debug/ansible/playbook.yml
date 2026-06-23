@@ -1,0 +1,9 @@
+---
+- name: Deploy ECS-RDS Debug App
+  hosts: app
+  become: true
+  roles:
+    - role: docker
+      tags: docker
+    - role: app
+      tags: app

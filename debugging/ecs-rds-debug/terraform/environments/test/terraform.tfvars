@@ -1,0 +1,22 @@
+aws_region   = "eu-central-1"
+environment  = "test"
+project_name = "ecs-rds-debug"
+
+# Networking
+vpc_cidr            = "10.30.0.0/16"
+public_subnet_cidr  = "10.30.1.0/24"
+private_subnet_cidr = "10.30.10.0/24"
+az_a                = "eu-central-1a"
+az_b                = "eu-central-1b"
+
+# RDS — mała instancja, mało połączeń (celowo)
+rds_instance_class  = "db.t3.micro"
+rds_max_connections = 25
+db_name             = "appdb"
+db_username         = "appuser"
+# db_password — podaj przez env: export TF_VAR_db_password="..."
+
+# ECS + connection pool
+pool_min          = 1
+pool_max          = 5   # 2 taski * 5 = 10 połączeń; RDS max=25 → 15 zapas
+ecs_desired_count = 2

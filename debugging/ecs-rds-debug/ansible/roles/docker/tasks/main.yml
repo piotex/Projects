@@ -1,0 +1,25 @@
+---
+- name: Install Docker
+  ansible.builtin.dnf:
+    name: docker
+    state: present
+
+- name: Start and enable Docker
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add ec2-user to docker group
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: true
+
+- name: Install AWS CLI v2
+  ansible.builtin.shell: |
+    curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+    unzip -q /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install --update
+  args:
+    creates: /usr/local/bin/aws

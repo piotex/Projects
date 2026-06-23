@@ -1,0 +1,29 @@
+---
+- name: Login to ECR
+  ansible.builtin.shell: |
+    aws ecr get-login-password --region {{ ecr_region }} | \
+      docker login --username AWS --password-stdin {{ ecr_repository_url }}
+  changed_when: false
+
+- name: Pull latest image
+  community.docker.docker_image:
+    name: "{{ ecr_repository_url }}:latest"
+    source: pull
+    force_source: true
+
+- name: Run app container
+  community.docker.docker_container:
+    name: ecs-rds-debug
+    image: "{{ ecr_repository_url }}:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "5000:5000"
+    env:
+      DB_HOST: "{{ db_host }}"
+      DB_PORT: "{{ db_port }}"
+      DB_NAME: "{{ db_name }}"
+      DB_USER: "{{ db_user }}"
+      DB_PASS:  "{{ db_pass }}"
+      POOL_MIN: "{{ pool_min }}"
+      POOL_MAX: "{{ pool_max }}"

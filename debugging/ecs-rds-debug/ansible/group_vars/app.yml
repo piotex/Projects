@@ -1,0 +1,12 @@
+# ECR
+ecr_region: "eu-central-1"
+ecr_repository_url: "ECR_REPO_URL"   # podstawiany przez sed w Readme
+
+# App env
+db_host: "DB_HOST_PLACEHOLDER"
+db_port: "5432"
+db_name: "appdb"
+db_user: "appuser"
+db_pass: "changeme"
+pool_min: "1"
+pool_max: "5"
