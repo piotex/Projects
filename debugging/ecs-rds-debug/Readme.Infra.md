@@ -44,8 +44,7 @@ ecs-rds-debug/
 ```bash
 # Deploy
 terraform init -backend-config=environments/test/backend.hcl
-terraform plan -var-file=environments/test/terraform.tfvars -out=tfplan
-terraform apply "tfplan"
+terraform apply -var-file=environments/test/terraform.tfvars
 
 # Outputs
 terraform output -raw alb_dns_name

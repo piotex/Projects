@@ -7,4 +7,4 @@ echo "==="
 find . -type f -name '*Zone.Identifier' | sed 's|/[^/]*$||' | sort | uniq -c | sort -nr
 
 
-# find . -type f -name '*Zone.Identifier' -delete
+find . -type f -name '*Zone.Identifier' -delete

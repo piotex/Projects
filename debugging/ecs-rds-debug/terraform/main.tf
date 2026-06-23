@@ -1,12 +1,14 @@
 module "networking" {
   source = "./modules/networking"
 
-  environment        = var.environment
-  vpc_cidr           = var.vpc_cidr
-  public_subnet_cidr = var.public_subnet_cidr
-  private_subnet_cidr = var.private_subnet_cidr
-  az_a               = var.az_a
-  az_b               = var.az_b
+  environment           = var.environment
+  vpc_cidr              = var.vpc_cidr
+  public_subnet_cidr_a  = var.public_subnet_cidr_a
+  public_subnet_cidr_b  = var.public_subnet_cidr_b
+  private_subnet_cidr_a = var.private_subnet_cidr_a
+  private_subnet_cidr_b = var.private_subnet_cidr_b
+  az_a                  = var.az_a
+  az_b                  = var.az_b
 }
 
 module "ecr" {
